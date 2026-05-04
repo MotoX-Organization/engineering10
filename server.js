@@ -20,7 +20,8 @@ app.use(express.json());
 // ============================================
 // MONGODB CONNECTION & SCHEMAS
 // ============================================
-mongoose.connect('mongodb://localhost:27017/engineering10x').then(() => {
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/engineering10x';
+mongoose.connect(mongoURI).then(() => {
   console.log('✅ MongoDB connected');
 }).catch(err => {
   console.warn('⚠️  MongoDB connection failed:', err.message);
