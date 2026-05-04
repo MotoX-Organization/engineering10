@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engineering 10X — Team Performance Analytics</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0a0a0f;
+  color: #e0e0ff;
+  overflow-x: hidden;
+}
+
+/* ========== HERO SECTION ========== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 50%, #0f0f1e 100%);
+}
+
+#neural-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 900px;
+  padding: 40px;
+  animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 900;
+  margin-bottom: 20px;
+  background: linear-gradient(120deg, #00f5ff, #8b5cf6, #ff006e, #00f5ff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 8s ease infinite, typeWriter 3s steps(35) 0.5s;
+  overflow: hidden;
+}
+
+@keyframes typeWriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.hero p {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: #a0a0ff;
+  margin-bottom: 40px;
+  opacity: 0.9;
+  line-height: 1.6;
+  animation: slideUp 1s ease-out 0.3s backwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 16px 40px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00f5ff, #8b5cf6);
+  color: #000;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  animation: slideUp 1s ease-out 0.6s backwards;
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.4), inset 0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  transition: left 0.5s ease;
+}
+
+.cta-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(0, 245, 255, 0.8), inset 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+.cta-button:hover::before {
+  left: 100%;
+}
+
+/* ========== HOW IT WORKS ========== */
+.how-it-works {
+  padding: 120px 40px;
+  background: #0f0f1e;
+  position: relative;
+  overflow: hidden;
+}
+
+.how-it-works::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00f5ff, transparent);
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.section-title {
+  text-align: center;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  margin-bottom: 80px;
+  background: linear-gradient(120deg, #00f5ff, #ff006e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.step {
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  opacity: 0;
+  animation: slideInUp 0.8s ease-out forwards;
+  transition: all 0.3s ease;
+}
+
+.step:nth-child(1) { animation-delay: 0.2s; }
+.step:nth-child(2) { animation-delay: 0.4s; }
+.step:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step:hover {
+  border-color: rgba(0, 245, 255, 0.5);
+  box-shadow: 0 0 30px rgba(0, 245, 255, 0.2);
+  transform: translateY(-5px);
+}
+
+.step-icon {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+}
+
+.step h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #00f5ff;
+}
+
+.step p {
+  color: #a0a0ff;
+  line-height: 1.6;
+}
+
+/* ========== FEATURES BENTO ========== */
+.features {
+  padding: 120px 40px;
+  background: linear-gradient(180deg, #0a0a0f 0%, #1a0a2e 100%);
+  position: relative;
+}
+
+.features::after {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: pulse 6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.feature-card {
+  background: linear-gradient(135deg, rgba(0, 245, 255, 0.05), rgba(139, 92, 246, 0.05));
+  border: 1px solid rgba(255, 0, 110, 0.2);
+  border-radius: 12px;
+  padding: 30px;
+  opacity: 0;
+  animation: fadeInScale 0.6s ease-out forwards;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.feature-card:hover {
+  border-color: rgba(0, 245, 255, 0.6);
+  box-shadow: 0 0 30px rgba(0, 245, 255, 0.3), inset 0 0 20px rgba(139, 92, 246, 0.1);
+  transform: translateY(-8px);
+}
+
+.feature-card:hover::before {
+  left: 100%;
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+.feature-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #00f5ff;
+}
+
+.feature-card p {
+  color: #a0a0ff;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Stagger animations */
+.feature-card:nth-child(1) { animation-delay: 0.1s; }
+.feature-card:nth-child(2) { animation-delay: 0.2s; }
+.feature-card:nth-child(3) { animation-delay: 0.3s; }
+.feature-card:nth-child(4) { animation-delay: 0.4s; }
+.feature-card:nth-child(5) { animation-delay: 0.5s; }
+.feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* ========== DEMO SECTION ========== */
+.demo {
+  padding: 120px 40px;
+  background: #0f0f1e;
+  position: relative;
+}
+
+.demo-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.demo-text h2 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  margin-bottom: 20px;
+  background: linear-gradient(120deg, #00f5ff, #ff006e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.demo-text p {
+  color: #a0a0ff;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.demo-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: rgba(0, 245, 255, 0.05);
+  border-left: 3px solid #00f5ff;
+  border-radius: 8px;
+  opacity: 0;
+  animation: slideInLeft 0.8s ease-out forwards;
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.stat-item:nth-child(1) { animation-delay: 0.2s; }
+.stat-item:nth-child(2) { animation-delay: 0.4s; }
+.stat-item:nth-child(3) { animation-delay: 0.6s; }
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #00f5ff;
+  font-family: 'Courier New', monospace;
+  min-width: 80px;
+}
+
+.stat-label {
+  color: #a0a0ff;
+  font-size: 0.95rem;
+}
+
+.demo-mockup {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  border-radius: 12px;
+  padding: 30px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  opacity: 0;
+  animation: slideInRight 0.8s ease-out 0.3s forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.mockup-header {
+  height: 50px;
+  background: linear-gradient(90deg, rgba(0, 245, 255, 0.2), rgba(139, 92, 246, 0.2));
+  border-radius: 8px;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 0%; }
+  50% { background-position: 100% 0%; }
+}
+
+.mockup-rows {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.mockup-row {
+  height: 40px;
+  background: rgba(0, 245, 255, 0.1);
+  border-radius: 6px;
+  animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.mockup-row:nth-child(2) { animation-delay: 0.2s; }
+.mockup-row:nth-child(3) { animation-delay: 0.4s; }
+
+@media (max-width: 768px) {
+  .demo-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========== CTA SECTION ========== */
+.cta-section {
+  padding: 120px 40px;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1000px;
+  height: 1000px;
+  background: radial-gradient(circle, rgba(0, 245, 255, 0.1) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  animation: expandPulse 3s ease-out;
+  pointer-events: none;
+}
+
+@keyframes expandPulse {
+  0% { width: 0; height: 0; opacity: 1; }
+  100% { width: 1000px; height: 1000px; opacity: 0; }
+}
+
+.cta-content {
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.cta-content h2 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  margin-bottom: 20px;
+  background: linear-gradient(120deg, #00f5ff, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: slideUp 0.8s ease-out;
+}
+
+.cta-content p {
+  font-size: 1.1rem;
+  color: #a0a0ff;
+  margin-bottom: 40px;
+  animation: slideUp 0.8s ease-out 0.2s backwards;
+}
+
+.email-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 40px;
+  animation: slideUp 0.8s ease-out 0.4s backwards;
+}
+
+.email-form input {
+  flex: 1;
+  padding: 14px 20px;
+  background: rgba(0, 245, 255, 0.05);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  border-radius: 8px;
+  color: #e0e0ff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.email-form input:focus {
+  outline: none;
+  border-color: #00f5ff;
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+  background: rgba(0, 245, 255, 0.1);
+}
+
+.email-form button {
+  padding: 14px 40px;
+  background: linear-gradient(135deg, #ff006e, #00f5ff);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.email-form button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255, 0, 110, 0.6);
+}
+
+.success-message {
+  display: none;
+  color: #00f5ff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  animation: popIn 0.5s ease-out;
+}
+
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.footer-text {
+  color: #707080;
+  font-size: 0.9rem;
+  animation: slideUp 0.8s ease-out 0.6s backwards;
+}
+
+/* ========== SCROLL REVEAL ========== */
+.scroll-reveal {
+  opacity: 0;
+}
+
+.scroll-reveal.visible {
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .steps, .bento-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .email-form {
+    flex-direction: column;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== HERO SECTION ========== -->
+<section class="hero">
+  <canvas id="neural-canvas"></canvas>
+  <div class="hero-content">
+    <h1>Your Team's Code. Amplified 10X.</h1>
+    <p>Connect your GitHub repo in seconds. Watch your team's performance come alive.</p>
+    <button class="cta-button">Connect Your Repo →</button>
+  </div>
+</section>
+
+<!-- ========== HOW IT WORKS ========== -->
+<section class="how-it-works scroll-reveal">
+  <h2 class="section-title">How It Works</h2>
+  <div class="steps">
+    <div class="step scroll-reveal">
+      <div class="step-icon">🔗</div>
+      <h3>Connect</h3>
+      <p>Link your GitHub organization. One click, infinite data.</p>
+    </div>
+    <div class="step scroll-reveal">
+      <div class="step-icon">⚡</div>
+      <h3>Analyze</h3>
+      <p>AI instantly processes contribution patterns and team dynamics.</p>
+    </div>
+    <div class="step scroll-reveal">
+      <div class="step-icon">🚀</div>
+      <h3>Amplify</h3>
+      <p>Unlock 10X insights and actionable suggestions for your team.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FEATURES ========== -->
+<section class="features scroll-reveal">
+  <h2 class="section-title">Powerful Features</h2>
+  <div class="bento-grid">
+    <div class="feature-card scroll-reveal">
+      <div class="feature-icon">🔥</div>
+      <h3>Live Heatmap</h3>
+      <p>Real-time GitHub contribution graphs. See who's coding, when, and how much.</p>
+    </div>
+    <div class="feature-card scroll-reveal">
+      <div class="feature-icon">⚡</div>
+      <h3>Efficiency Score</h3>
+      <p>AI-powered score (0–100) for each engineer based on impact and velocity.</p>
+    </div>
+    <div class="feature-card scroll-reveal">
+      <div class="feature-icon">🎯</div>
+      <h3>Smart Suggestions</h3>
+      <p>"Increase test coverage", "PR review bottleneck detected", and more.</p>
+    </div>
+    <div class="feature-card scroll-reveal">
+      <div class="feature-icon">📊</div>
+      <h3>Team Velocity</h3>
+      <p>Track sprint progress, PR cycles, and deployment frequency in real-time.</p>
+    </div>
+    <div class="feature-card scroll-reveal">
+      <div class="feature-icon">🚨</div>
+      <h3>Burnout Detection</h3>
+      <p>Identify overwork patterns before they become a problem.</p>
+    </div>
+    <div class="feature-card scroll-reveal">
+      <div class="feature-icon">🏆</div>
+      <h3>Team Leaderboard</h3>
+      <p>Friendly competition. Celebrate your top performers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== DEMO SECTION ========== -->
+<section class="demo scroll-reveal">
+  <div class="demo-container">
+    <div class="demo-text scroll-reveal">
+      <h2>See The Power In Action</h2>
+      <p>Engineering 10X gives you complete visibility into your team's engineering excellence. Track metrics that matter, get insights that drive growth.</p>
+      <div class="demo-stats">
+        <div class="stat-item scroll-reveal">
+          <div class="stat-number" data-count="1240">0</div>
+          <div class="stat-label">Contributions Tracked</div>
+        </div>
+        <div class="stat-item scroll-reveal">
+          <div class="stat-number" data-count="94">0</div>
+          <div class="stat-label">Team Efficiency %</div>
+        </div>
+        <div class="stat-item scroll-reveal">
+          <div class="stat-number" data-count="47">0</div>
+          <div class="stat-label">PRs This Week</div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-mockup scroll-reveal">
+      <div class="mockup-header"></div>
+      <div class="mockup-rows">
+        <div class="mockup-row"></div>
+        <div class="mockup-row"></div>
+        <div class="mockup-row"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA SECTION ========== -->
+<section class="cta-section scroll-reveal">
+  <div class="cta-content">
+    <h2>Ready to Build a 10X Team?</h2>
+    <p>Get early access and transform how you manage engineering excellence.</p>
+    <div class="email-form">
+      <input type="email" placeholder="your@email.com" id="email-input">
+      <button onclick="submitEmail()">Get Early Access</button>
+    </div>
+    <div class="success-message" id="success-msg">✓ Welcome! Check your email for next steps.</div>
+    <p class="footer-text">No spam, no credit card needed. Just pure insights.</p>
+  </div>
+</section>
+
+<script>
+// ========== NEURAL NETWORK ANIMATION ==========
+const canvas = document.getElementById('neural-canvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+const particleCount = 80;
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.vx = (Math.random() - 0.5) * 1;
+    this.vy = (Math.random() - 0.5) * 1;
+    this.radius = Math.random() * 2 + 1;
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+
+    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+  }
+
+  draw() {
+    ctx.fillStyle = `rgba(0, 245, 255, ${0.8 - this.radius / 5})`;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < particleCount; i++) {
+  particles.push(new Particle());
+}
+
+function drawLines() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < 150) {
+        ctx.strokeStyle = `rgba(0, 245, 255, ${0.2 - distance / 750})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+
+  drawLines();
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// ========== SCROLL REVEAL ==========
+const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+
+const revealOnScroll = () => {
+  scrollRevealElements.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.85) {
+      el.classList.add('visible');
+    }
+  });
+};
+
+window.addEventListener('scroll', revealOnScroll);
+revealOnScroll();
+
+// ========== FETCH GITHUB DATA ==========
+async function fetchGitHubData() {
+  try {
+    const response = await fetch('http://localhost:3003/api/analytics');
+    const data = await response.json();
+
+    // Update demo stats with real data
+    const statsMap = {
+      '1240': data.repo.stargazers_count || 1240,
+      '94': Math.round((data.contributors.reduce((sum, c) => sum + c.contributions, 0) / (data.contributors[0]?.contributions || 1)) * 100) || 94,
+      '47': data.open_prs?.length * 10 || 47
+    };
+
+    Object.entries(statsMap).forEach(([oldVal, newVal]) => {
+      const el = document.querySelector(`[data-count="${oldVal}"]`);
+      if (el) {
+        el.dataset.count = newVal;
+      }
+    });
+
+    console.log('✅ GitHub data loaded:', data);
+  } catch (error) {
+    console.log('⚠️  Backend not running. Using demo data.');
+    // Falls back to demo data if backend is down
+  }
+}
+
+fetchGitHubData();
+
+// ========== COUNTER ANIMATION ==========
+const counterElements = document.querySelectorAll('[data-count]');
+
+const animateCounters = () => {
+  counterElements.forEach(el => {
+    const target = parseInt(el.dataset.count);
+    let current = 0;
+    const increment = target / 60;
+
+    const counter = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        el.textContent = target;
+        clearInterval(counter);
+      } else {
+        el.textContent = Math.floor(current);
+      }
+    }, 30);
+  });
+};
+
+const observerOptions = {
+  threshold: 0.5
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && entry.target.classList.contains('demo')) {
+      animateCounters();
+      observer.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+
+document.querySelector('.demo') && observer.observe(document.querySelector('.demo'));
+
+// ========== EMAIL SIGNUP ==========
+function submitEmail() {
+  const email = document.getElementById('email-input').value;
+  const form = document.querySelector('.email-form');
+  const successMsg = document.getElementById('success-msg');
+
+  if (email && email.includes('@')) {
+    form.style.display = 'none';
+    successMsg.style.display = 'block';
+    console.log('Email submitted:', email);
+  }
+}
+
+// ========== GRADIENT SHIFT ON MOUSEMOVE ==========
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth) * 100;
+  const y = (e.clientY / window.innerHeight) * 100;
+  document.body.style.backgroundPosition = `${x}% ${y}%`;
+});
+</script>
+
+</body>
+</html>

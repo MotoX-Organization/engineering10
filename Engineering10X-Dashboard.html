@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engineering 10X — Team Analytics Dashboard</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0a0a0f;
+  color: #e0e0ff;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+header {
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(120deg, #00f5ff, #8b5cf6, #ff006e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+
+header p {
+  color: #a0a0ff;
+  font-size: 1.1rem;
+}
+
+/* ========== KPI WIDGETS ========== */
+.kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 60px;
+}
+
+.kpi-widget {
+  background: linear-gradient(135deg, rgba(0, 245, 255, 0.05), rgba(139, 92, 246, 0.05));
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  border-radius: 12px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: slideUp 0.8s ease-out forwards;
+  transition: all 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.kpi-widget:nth-child(1) { animation-delay: 0.1s; }
+.kpi-widget:nth-child(2) { animation-delay: 0.2s; }
+.kpi-widget:nth-child(3) { animation-delay: 0.3s; }
+.kpi-widget:nth-child(4) { animation-delay: 0.4s; }
+
+.kpi-widget::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00f5ff, transparent);
+  animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.kpi-widget:hover {
+  border-color: rgba(0, 245, 255, 0.5);
+  box-shadow: 0 0 30px rgba(0, 245, 255, 0.2);
+  transform: translateY(-5px);
+}
+
+.kpi-icon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+.kpi-label {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.kpi-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #00f5ff;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 5px;
+}
+
+.kpi-unit {
+  color: #707080;
+  font-size: 0.9rem;
+}
+
+/* ========== CONTRIBUTORS TABLE ========== */
+.ai-insights-section {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(0, 245, 255, 0.05));
+  border-radius: 12px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 30px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: slideUp 0.8s ease-out 0.5s forwards;
+}
+
+.ai-insights-section h3 {
+  color: #8b5cf6;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.ai-stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.ai-stat-card {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+.ai-stat-label {
+  color: #a0a0ff;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.ai-stat-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #8b5cf6;
+  font-family: 'Courier New', monospace;
+}
+
+.ai-stat-unit {
+  color: #707080;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.ai-tools-breakdown {
+  grid-column: span 1;
+}
+
+.ai-tools-breakdown .tool-item {
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-tools-breakdown .tool-name {
+  color: #8b5cf6;
+  font-weight: 600;
+}
+
+.ai-tools-breakdown .tool-count {
+  background: rgba(139, 92, 246, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: #8b5cf6;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.ai-engineers-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.ai-engineers-table thead {
+  border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+}
+
+.ai-engineers-table th {
+  padding: 15px;
+  text-align: left;
+  color: #8b5cf6;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.ai-engineers-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+  color: #e0e0ff;
+}
+
+.ai-engineers-table tbody tr:hover {
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.contributors-section {
+  background: #0f0f1e;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  padding: 30px;
+  opacity: 0;
+  animation: slideUp 0.8s ease-out 0.6s forwards;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 245, 255, 0.2);
+}
+
+.section-header h2 {
+  font-size: 1.8rem;
+  color: #00f5ff;
+}
+
+.contributors-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.contributors-table th.sortable:hover {
+  color: #fff;
+  background: rgba(0, 245, 255, 0.05);
+}
+
+.sort-arrow {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #707080;
+  transition: all 0.3s ease;
+}
+
+.sort-arrow.asc {
+  color: #00f5ff;
+  content: '↑';
+}
+
+.sort-arrow.desc {
+  color: #ff006e;
+  content: '↓';
+}
+
+/* ========== TABLE ========== */
+.contributors-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.contributors-table thead {
+  border-bottom: 2px solid rgba(0, 245, 255, 0.3);
+}
+
+.contributors-table th {
+  padding: 15px;
+  text-align: left;
+  color: #00f5ff;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.contributors-table th:hover {
+  color: #fff;
+}
+
+.contributors-table td {
+  padding: 15px;
+  border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+  color: #e0e0ff;
+}
+
+.contributors-table tbody tr {
+  transition: all 0.3s ease;
+  animation: fadeIn 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.contributors-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.contributors-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+.contributors-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+.contributors-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+.contributors-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+.contributors-table tbody tr:nth-child(6) { animation-delay: 0.6s; }
+.contributors-table tbody tr:nth-child(7) { animation-delay: 0.7s; }
+.contributors-table tbody tr:nth-child(8) { animation-delay: 0.8s; }
+
+.contributors-table tbody tr:hover {
+  background: rgba(0, 245, 255, 0.05);
+  border-left: 3px solid #00f5ff;
+  padding-left: 12px;
+  box-shadow: inset 0 0 20px rgba(0, 245, 255, 0.1);
+}
+
+.contributor-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #00f5ff;
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.contributor-name {
+  font-weight: 700;
+  color: #00f5ff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(0, 245, 255, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #00f5ff;
+  font-weight: 600;
+  margin: 2px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #a0a0ff;
+}
+
+.spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 245, 255, 0.2);
+  border-top: 3px solid #00f5ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========== MODAL ========== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: #0f0f1e;
+  border-radius: 16px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 50px rgba(139, 92, 246, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(0, 245, 255, 0.05));
+}
+
+.modal-header h2 {
+  color: #8b5cf6;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #a0a0ff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.modal-close:hover {
+  color: #00f5ff;
+  transform: scale(1.2);
+}
+
+.modal-body {
+  padding: 30px;
+}
+
+.engineer-info {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.engineer-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #00f5ff;
+  background: rgba(0, 245, 255, 0.1);
+  padding: 12px 24px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.confidence-display {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.confidence-circle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.confidence-circle svg {
+  width: 100%;
+  height: 100%;
+}
+
+.confidence-bg {
+  fill: none;
+  stroke: rgba(139, 92, 246, 0.2);
+  stroke-width: 8;
+}
+
+.confidence-fill {
+  fill: none;
+  stroke: url(#confidenceGradient);
+  stroke-width: 8;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  transition: stroke-dashoffset 0.8s ease;
+  transform: rotate(-90deg);
+  transform-origin: 50px 50px;
+}
+
+.confidence-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #8b5cf6;
+}
+
+.signals-breakdown {
+  margin: 30px 0;
+}
+
+.signals-breakdown h3 {
+  color: #8b5cf6;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.signal-item {
+  background: rgba(139, 92, 246, 0.1);
+  border-left: 3px solid #8b5cf6;
+  padding: 12px 16px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  animation: slideIn 0.4s ease forwards;
+  opacity: 0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.signal-item:nth-child(1) { animation-delay: 0.1s; }
+.signal-item:nth-child(2) { animation-delay: 0.2s; }
+.signal-item:nth-child(3) { animation-delay: 0.3s; }
+.signal-item:nth-child(4) { animation-delay: 0.4s; }
+.signal-item:nth-child(5) { animation-delay: 0.5s; }
+
+.signal-name {
+  color: #a0a0ff;
+  font-weight: 600;
+}
+
+.signal-points {
+  background: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.confidence-explanation {
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+.confidence-explanation h3 {
+  color: #8b5cf6;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.explanation-text p {
+  color: #a0a0ff;
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.explanation-text strong {
+  color: #00f5ff;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .kpis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2rem;
+  }
+
+  .kpis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .sort-controls {
+    width: 100%;
+  }
+
+  .sort-btn {
+    flex: 1;
+  }
+
+  .contributors-table {
+    font-size: 0.9rem;
+  }
+
+  .contributors-table th,
+  .contributors-table td {
+    padding: 10px;
+  }
+
+  .contributors-table th {
+    display: none;
+  }
+
+  .contributors-table td {
+    display: block;
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  .contributors-table td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 6px;
+    font-weight: bold;
+    color: #00f5ff;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- HEADER -->
+  <header>
+    <h1>Engineering 10X Dashboard</h1>
+    <p>langchain-ai/langchain Repository Analytics</p>
+  </header>
+
+  <!-- KPI WIDGETS -->
+  <div class="kpis-grid" id="kpis-container">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading KPIs...</p>
+    </div>
+  </div>
+
+  <!-- AI INSIGHTS SECTION -->
+  <section class="ai-insights-section">
+    <div class="section-header">
+      <h2>🤖 AI Insights</h2>
+    </div>
+
+    <div class="ai-stats-container">
+      <div class="ai-stat-card">
+        <div class="ai-stat-label">AI-Assisted Commits</div>
+        <div class="ai-stat-value" id="ai-percentage">-</div>
+        <div class="ai-stat-unit">of total commits</div>
+      </div>
+
+      <div class="ai-tools-breakdown">
+        <h3>By AI Tool</h3>
+        <div id="ai-tools-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+          <div class="loading"><div class="spinner" style="width: 20px; height: 20px;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 30px;">
+      <h3>Engineers with Most AI Assistance</h3>
+      <table class="ai-engineers-table">
+        <thead>
+          <tr>
+            <th>Engineer</th>
+            <th>AI Commits</th>
+            <th>AI %</th>
+            <th>Confidence</th>
+          </tr>
+        </thead>
+        <tbody id="ai-engineers-tbody">
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 20px;">
+              <div class="spinner" style="display: inline-block; width: 20px; height: 20px;"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CONTRIBUTORS TABLE -->
+  <section class="contributors-section">
+    <div class="section-header">
+      <h2>Top 20 Contributors</h2>
+    </div>
+
+    <table class="contributors-table">
+      <thead>
+        <tr>
+          <th>Contributor</th>
+          <th onclick="sortBy('commits')" class="sortable" data-sort="commits">
+            Commits
+            <span class="sort-arrow" id="arrow-commits"></span>
+          </th>
+          <th onclick="sortBy('lines_changed')" class="sortable" data-sort="lines_changed">
+            Lines Changed
+            <span class="sort-arrow" id="arrow-lines_changed"></span>
+          </th>
+          <th onclick="sortBy('prs_raised')" class="sortable" data-sort="prs_raised">
+            PRs Raised
+            <span class="sort-arrow" id="arrow-prs_raised"></span>
+          </th>
+          <th onclick="sortBy('reviews')" class="sortable" data-sort="reviews">
+            Reviews
+            <span class="sort-arrow" id="arrow-reviews"></span>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="contributors-tbody">
+        <tr>
+          <td colspan="5" style="text-align: center; padding: 40px;">
+            <div class="spinner" style="display: inline-block;"></div>
+            <p style="margin-top: 20px;">Loading contributors...</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<!-- CONFIDENCE MODAL -->
+<div id="confidenceModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🔍 Confidence Score Breakdown</h2>
+      <button class="modal-close" onclick="closeConfidenceModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="engineer-info">
+        <span class="engineer-name" id="modalEngineer">-</span>
+      </div>
+
+      <div class="confidence-display">
+        <div class="confidence-circle" id="confidenceCircle">
+          <svg viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="confidenceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#00f5ff;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="45" class="confidence-bg"></circle>
+            <circle cx="50" cy="50" r="45" class="confidence-fill" id="confidenceFill"></circle>
+          </svg>
+          <div class="confidence-text" id="confidenceText">-</div>
+        </div>
+      </div>
+
+      <div class="signals-breakdown">
+        <h3>Detection Signals</h3>
+        <div id="signalsList" style="display: grid; gap: 12px;">
+          <div class="loading"><div class="spinner" style="width: 20px; height: 20px;"></div></div>
+        </div>
+      </div>
+
+      <div class="confidence-explanation">
+        <h3>How Confidence Works</h3>
+        <div class="explanation-text">
+          <p><strong>0-20%:</strong> Weak signals (e.g., just "co-authored")</p>
+          <p><strong>21-50%:</strong> Moderate signals (mentions of AI tools)</p>
+          <p><strong>51-75%:</strong> Strong signals (explicit "AI-assisted")</p>
+          <p><strong>76-100%:</strong> Very strong signals (e.g., "AI-generated", "Claude Agent")</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let allContributors = [];
+let currentSort = 'commits';
+
+// ========== FETCH AND DISPLAY DATA ==========
+async function fetchDashboardData() {
+  try {
+    console.log('📊 Fetching dashboard data...');
+
+    const response = await fetch('http://localhost:3003/api/analytics');
+    const data = await response.json();
+
+    console.log('✅ Data received:', data);
+
+    // Display KPIs
+    displayKPIs(data.kpis);
+
+    // Store and display contributors
+    allContributors = data.contributors || [];
+    sortAndDisplay(currentSort);
+
+    // Fetch AI insights
+    await fetchAIInsights();
+
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    document.getElementById('kpis-container').innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #ff6b6b;">
+        <p>❌ Backend not running</p>
+        <p>Start: node github-analytics.js</p>
+      </div>
+    `;
+  }
+}
+
+// ========== FETCH & DISPLAY AI INSIGHTS ==========
+async function fetchAIInsights() {
+  try {
+    const [statsRes, engineerRes] = await Promise.all([
+      fetch('http://localhost:3003/api/ai-stats'),
+      fetch('http://localhost:3003/api/engineer-ai-stats')
+    ]);
+
+    const stats = await statsRes.json();
+    const engineers = await engineerRes.json();
+
+    displayAIStats(stats);
+    displayAIEngineers(engineers.engineers);
+  } catch (error) {
+    console.error('Error fetching AI insights:', error);
+  }
+}
+
+function displayAIStats(stats) {
+  document.getElementById('ai-percentage').textContent = stats.ai_percentage + '%';
+
+  // Display AI tools breakdown
+  const toolsHtml = Object.entries(stats.by_ai_tool)
+    .sort((a, b) => b[1] - a[1])
+    .map(([tool, count]) => `
+      <div class="tool-item">
+        <span class="tool-name">${tool}</span>
+        <span class="tool-count">${count}</span>
+      </div>
+    `).join('');
+
+  document.getElementById('ai-tools-list').innerHTML = toolsHtml || 'No data';
+}
+
+function displayAIEngineers(engineers) {
+  const html = engineers.slice(0, 10).map(eng => `
+    <tr>
+      <td>${eng.login}</td>
+      <td>${eng.ai_commits}/${eng.total_commits}</td>
+      <td><strong>${eng.ai_percentage}%</strong></td>
+      <td style="cursor: pointer;" onclick="showConfidenceModal('${eng.login}', ${eng.avg_ai_confidence})">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="flex: 1;">
+            <div style="background: rgba(139, 92, 246, 0.2); border-radius: 10px; height: 8px; overflow: hidden;">
+              <div style="background: linear-gradient(90deg, #8b5cf6, #00f5ff); height: 100%; width: ${eng.avg_ai_confidence}%; transition: width 0.3s;"></div>
+            </div>
+          </div>
+          <span style="min-width: 35px; text-align: right; font-weight: 600; color: #8b5cf6;">${eng.avg_ai_confidence}%</span>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  document.getElementById('ai-engineers-tbody').innerHTML = html || `
+    <tr>
+      <td colspan="4" style="text-align: center; padding: 20px; color: #a0a0ff;">
+        No AI insights available
+      </td>
+    </tr>
+  `;
+}
+
+// ========== DISPLAY KPIs ==========
+function displayKPIs(kpis) {
+  const turnaroundUnit = kpis.avgPRTurnaround >= 1 ? 'days' : 'hours';
+  const kpiConfigs = [
+    { label: '⭐ Total Stars', value: kpis.totalStars, unit: '' },
+    { label: '👥 Active Contributors', value: kpis.activeContributors, unit: 'users' },
+    { label: '⚡ Weekly Commits', value: kpis.weeklyCommits, unit: 'commits' },
+    { label: '🔄 PR Turnaround', value: kpis.avgPRTurnaround, unit: turnaroundUnit }
+  ];
+
+  const html = kpiConfigs.map((config, idx) => `
+    <div class="kpi-widget">
+      <div class="kpi-label">${config.label}</div>
+      <div class="kpi-value">${config.value.toLocaleString()}</div>
+      <div class="kpi-unit">${config.unit}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('kpis-container').innerHTML = html;
+}
+
+// ========== SORT AND DISPLAY CONTRIBUTORS ==========
+let sortStates = {
+  commits: null,
+  lines_changed: null,
+  prs_raised: null,
+  reviews: null
+};
+
+function sortBy(sortKey) {
+  // Toggle sort direction
+  if (sortStates[sortKey] === 'asc') {
+    sortStates[sortKey] = 'desc';
+  } else if (sortStates[sortKey] === 'desc') {
+    sortStates[sortKey] = null;
+    sortStates[sortKey] = 'asc'; // Reset to asc on next click
+  } else {
+    sortStates[sortKey] = 'asc';
+  }
+
+  // Reset other sort states
+  Object.keys(sortStates).forEach(key => {
+    if (key !== sortKey) {
+      sortStates[key] = null;
+    }
+  });
+
+  // Update arrow displays
+  updateSortArrows(sortKey);
+  sortAndDisplay(sortKey, sortStates[sortKey]);
+}
+
+function updateSortArrows(activeSortKey) {
+  document.querySelectorAll('.sort-arrow').forEach(arrow => {
+    arrow.classList.remove('asc', 'desc');
+    arrow.textContent = '';
+  });
+
+  const activeArrow = document.getElementById(`arrow-${activeSortKey}`);
+  if (activeArrow && sortStates[activeSortKey]) {
+    activeArrow.classList.add(sortStates[activeSortKey]);
+    activeArrow.textContent = sortStates[activeSortKey] === 'asc' ? '↑' : '↓';
+  }
+}
+
+function sortAndDisplay(sortKey, direction = 'desc') {
+  const sorted = [...allContributors].sort((a, b) => {
+    const aVal = a[sortKey] || 0;
+    const bVal = b[sortKey] || 0;
+
+    if (direction === 'asc') {
+      return aVal - bVal;
+    } else {
+      return bVal - aVal;
+    }
+  });
+
+  displayContributors(sorted);
+}
+
+// ========== DISPLAY CONTRIBUTORS TABLE ==========
+function displayContributors(contributors) {
+  const html = contributors.slice(0, 20).map(c => `
+    <tr>
+      <td class="contributor-name">
+        <img src="${c.avatar}" alt="${c.login}" class="contributor-avatar" style="width: 32px; height: 32px;">
+        ${c.login}
+      </td>
+      <td><span class="stat-badge">${c.commits}</span></td>
+      <td><span class="stat-badge">${c.lines_changed.toLocaleString()}</span></td>
+      <td><span class="stat-badge">${c.prs_raised}</span></td>
+      <td><span class="stat-badge">${c.reviews}</span></td>
+    </tr>
+  `).join('');
+
+  document.getElementById('contributors-tbody').innerHTML = html || `
+    <tr>
+      <td colspan="5" style="text-align: center; padding: 40px; color: #a0a0ff;">
+        No contributors found
+      </td>
+    </tr>
+  `;
+}
+
+// ========== CONFIDENCE MODAL FUNCTIONS ==========
+const SIGNAL_POINTS = {
+  'AI-Generated': 60,
+  'AI-Assisted': 50,
+  'Claude Agent': 40,
+  'Copilot': 30,
+  'GPT/OpenAI': 30,
+  'AI Agent': 35,
+  'Generated by': 25,
+  'Bot/Automated': 20,
+  'Co-authored': 10,
+  'Feature/Feat': 5,
+  'Well-documented': 5
+};
+
+function showConfidenceModal(engineer, confidence) {
+  const signals = getSignalsForConfidence(confidence);
+
+  document.getElementById('modalEngineer').textContent = engineer;
+  document.getElementById('confidenceText').textContent = confidence + '%';
+
+  // Update SVG circle
+  const offset = 283 - (confidence / 100) * 283;
+  document.getElementById('confidenceFill').style.strokeDashoffset = offset;
+
+  // Display signals
+  const signalsHtml = signals.map((signal, idx) => `
+    <div class="signal-item">
+      <span class="signal-name">${signal.name}</span>
+      <span class="signal-points">+${signal.points}%</span>
+    </div>
+  `).join('');
+
+  document.getElementById('signalsList').innerHTML = signalsHtml;
+
+  document.getElementById('confidenceModal').style.display = 'flex';
+}
+
+function closeConfidenceModal() {
+  document.getElementById('confidenceModal').style.display = 'none';
+}
+
+function getSignalsForConfidence(confidence) {
+  const signals = [];
+  let remaining = confidence;
+
+  if (remaining >= 60) {
+    signals.push({ name: 'AI-Generated', points: 60 });
+    remaining -= 60;
+  } else if (remaining >= 50) {
+    signals.push({ name: 'AI-Assisted', points: 50 });
+    remaining -= 50;
+  } else if (remaining >= 40) {
+    signals.push({ name: 'Claude Agent', points: 40 });
+    remaining -= 40;
+  } else if (remaining >= 35) {
+    signals.push({ name: 'AI Agent', points: 35 });
+    remaining -= 35;
+  }
+
+  if (remaining >= 25) {
+    signals.push({ name: 'Generated by...', points: 25 });
+    remaining -= 25;
+  } else if (remaining >= 20) {
+    signals.push({ name: 'Bot/Automated', points: 20 });
+    remaining -= 20;
+  }
+
+  if (remaining >= 10) {
+    signals.push({ name: 'Co-authored pattern', points: 10 });
+    remaining -= 10;
+  }
+
+  if (remaining >= 5) {
+    signals.push({ name: 'Feature commit', points: 5 });
+  }
+
+  return signals;
+}
+
+// Close modal on outside click
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('confidenceModal');
+  if (e.target === modal) {
+    closeConfidenceModal();
+  }
+});
+
+// Load on page load
+document.addEventListener('DOMContentLoaded', fetchDashboardData);
+
+// Refresh every 5 minutes
+setInterval(fetchDashboardData, 5 * 60 * 1000);
+</script>
+
+</body>
+</html>
