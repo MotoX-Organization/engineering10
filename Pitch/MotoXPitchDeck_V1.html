@@ -2207,9 +2207,12 @@ function playTick(loud) {
     if (unityInitialized) return;
     unityInitialized = true;
 
+    console.log('WebGL initialization starting...');
     const canvas = document.querySelector("#unity-canvas");
     const loadingBar = document.querySelector("#unity-loading-bar");
     const warningBanner = document.querySelector("#unity-warning");
+
+    console.log('Canvas:', canvas, 'LoadingBar:', loadingBar, 'Warning:', warningBanner);
 
     if (!canvas) {
       console.error('Canvas element not found');
@@ -2262,7 +2265,7 @@ function playTick(loud) {
   const originalGoTo = window.goTo;
   window.goTo = function(n) {
     originalGoTo(n);
-    if (n === 5) {
+    if (n === 4) {
       setTimeout(initializeWebGL, 100);
     }
   };
