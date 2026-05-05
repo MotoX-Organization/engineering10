@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Presentation</title>
+  <link rel="stylesheet" href="build/TemplateData/style.css">
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #000000;
+      --text: #f2f2f2;
+      --muted: #9a9a9a;
+      --accent: #5b8cff;
+      --fade-ms: 480ms;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+    }
+
+    .slides-viewport {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: clamp(1.25rem, 4vw, 3rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity var(--fade-ms) ease-in-out, visibility 0s linear var(--fade-ms);
+    }
+
+    .slide.is-active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition: opacity var(--fade-ms) ease-in-out, visibility 0s linear 0s;
+      z-index: 1;
+    }
+
+    .slide-inner {
+      max-width: 40rem;
+    }
+
+    .slide h1 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 600;
+      margin: 0 0 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .slide p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 1.05rem;
+    }
+
+    .slide code {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 0.9em;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.12em 0.4em;
+      border-radius: 4px;
+      color: var(--text);
+    }
+
+    .slide-num {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .unity-slide .slide-inner {
+      max-width: min(960px, 100%);
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .unity-slide h1 { margin-bottom: 0.5rem; }
+
+    .unity-host {
+      position: relative;
+      flex: 1;
+      min-height: min(70vh, 640px);
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Override Unity template fixed fullscreen for embedded player */
+    .unity-host #unity-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .unity-host #unity-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .unity-host #unity-loading-bar {
+      z-index: 2;
+    }
+
+    .chrome {
+      padding: 1rem 1.25rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: #000000;
+    }
+
+    .preload-bar-wrap {
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+    }
+
+    .preload-bar-wrap[hidden] {
+      display: none !important;
+    }
+
+    .preload-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .preload-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .preload-bar > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 999px;
+      transition: width 0.2s ease-out;
+    }
+
+    button.continue-btn {
+      appearance: none;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.65rem 1.4rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: filter 0.15s ease, transform 0.1s ease;
+    }
+
+    button.continue-btn:hover {
+      filter: brightness(1.08);
+    }
+
+    button.continue-btn:active {
+      transform: scale(0.98);
+    }
+
+    button.continue-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      filter: none;
+    }
+  </style>
+</head>
+<body>
+  <!--
+    Hooks: configure the presentation via data-* on #presentation (all optional except as noted).
+    data-fade-ms              — slide crossfade duration in ms (default 480)
+    data-game-slide-index     — 0-based index of the WebGL slide (default 3 = 4th slide)
+    data-build-url            — folder containing loader + data (default build/Build)
+    data-build-basename       — file prefix: {basename}.loader.js, .data.br, … (default build)
+    data-streaming-assets-url — Unity StreamingAssets path (default build/StreamingAssets)
+    data-company-name         — Unity companyName (default motoxgames)
+    data-product-name         — Unity productName (default citylegends)
+    data-product-version      — Unity productVersion (default 0.0.42)
+    data-unity-game-object     — SendMessage target on WebGL slide (default MotoXHostBridge)
+    data-unity-start-method    — Called when entering WebGL slide (default BeginLaunchSequence)
+    data-unity-start-message   — SendMessage third argument (default empty)
+    data-finalized-log-marker   — substring in console output that means “advance” (default gamefinalized)
+    data-begin-launch-extra-ms  — ms after fade before first SendMessage (default 900)
+    data-begin-launch-retries   — SendMessage attempts after Unity is ready (default 6)
+    data-begin-launch-interval-ms — delay between retries (default 500)
+    data-presentation-debug      — "true" to log SendMessage timing in the console
+    data-start-simulate-keys-cv  — "false" to skip synthetic C / V key events (default: on)
+    data-simulate-cv-every-retry — "true" to fire C/V on every SendMessage retry, not only the first
+  -->
+  <div
+    class="app"
+    id="presentation"
+    data-fade-ms="480"
+    data-game-slide-index="3"
+    data-build-url="build/Build"
+    data-build-basename="build"
+    data-streaming-assets-url="build/StreamingAssets"
+    data-company-name="motoxgames"
+    data-product-name="citylegends"
+    data-product-version="0.0.42"
+    data-unity-game-object="MotoXHostBridge"
+    data-unity-start-method="BeginLaunchSequence"
+    data-unity-start-message=""
+    data-finalized-log-marker="gamefinalized"
+    data-begin-launch-extra-ms="900"
+    data-begin-launch-retries="6"
+    data-begin-launch-interval-ms="500"
+    data-presentation-debug="false"
+    data-start-simulate-keys-cv="true"
+    data-simulate-cv-every-retry="false">
+    <div class="slides-viewport" id="slides-viewport">
+      <section class="slide is-active" data-slide="0" aria-label="Slide 1">
+        <div class="slide-inner">
+          <div class="slide-num">Slide 1 of 7</div>
+          <h1>Welcome</h1>
+          <p>This presentation uses fade transitions. The WebGL build begins loading as soon as you open the page, so it is ready by the time you reach the game slide.</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide="1" aria-label="Slide 2">
+        <div class="slide-inner">
+          <div class="slide-num">Slide 2 of 7</div>
+          <h1>Chapter one</h1>
+          <p>Replace this copy with your content. Use Continue to advance.</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide="2" aria-label="Slide 3">
+        <div class="slide-inner">
+          <div class="slide-num">Slide 3 of 7</div>
+          <h1>Chapter two</h1>
+          <p>Loading continues in the background. Watch the bar below.</p>
+        </div>
+      </section>
+
+      <section class="slide unity-slide" data-slide="3" aria-label="Slide 4 — WebGL">
+        <div class="slide-inner">
+          <div class="slide-num">Slide 4 of 7 — WebGL</div>
+          <h1>Interactive demo</h1>
+          <p style="margin-bottom: 1rem;">Entering this slide calls <code>BeginLaunchSequence</code> on <code>MotoXHostBridge</code>. When Unity logs <code>gamefinalized</code>, the deck advances automatically.</p>
+          <div class="unity-host" id="unity-host">
+            <div id="unity-container">
+              <canvas id="unity-canvas" width="960" height="540" tabindex="-1"></canvas>
+              <div id="unity-loading-bar">
+                <div id="unity-logo"></div>
+                <div id="unity-progress-bar-empty">
+                  <div id="unity-progress-bar-full"></div>
+                </div>
+              </div>
+              <div id="unity-warning"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-slide="4" aria-label="Slide 5">
+        <div class="slide-inner">
+          <div class="slide-num">Slide 5 of 7</div>
+          <h1>After the demo</h1>
+          <p>Continue your narrative here.</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide="5" aria-label="Slide 6">
+        <div class="slide-inner">
+          <div class="slide-num">Slide 6 of 7</div>
+          <h1>Closing thoughts</h1>
+          <p>Almost done.</p>
+        </div>
+      </section>
+
+      <section class="slide" data-slide="6" aria-label="Slide 7">
+        <div class="slide-inner">
+          <div class="slide-num">Slide 7 of 7</div>
+          <h1>Thank you</h1>
+          <p>End of presentation.</p>
+        </div>
+      </section>
+    </div>
+
+    <footer class="chrome">
+      <div class="preload-bar-wrap" id="preload-wrap">
+        <div class="preload-label" id="preload-label">Game loading</div>
+        <div class="preload-bar"><span id="preload-fill"></span></div>
+      </div>
+      <button type="button" class="continue-btn" id="continue-btn">Continue</button>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.getElementById("presentation");
+      var ds = root ? root.dataset : {};
+
+      var FADE_MS = parseInt(ds.fadeMs || "480", 10) || 480;
+      var GAME_SLIDE_INDEX = parseInt(ds.gameSlideIndex || "3", 10);
+      if (isNaN(GAME_SLIDE_INDEX)) GAME_SLIDE_INDEX = 3;
+      var BEGIN_LAUNCH_EXTRA_MS = parseInt(ds.beginLaunchExtraMs || "900", 10);
+      if (isNaN(BEGIN_LAUNCH_EXTRA_MS)) BEGIN_LAUNCH_EXTRA_MS = 900;
+      var BEGIN_LAUNCH_RETRIES = parseInt(ds.beginLaunchRetries || "6", 10);
+      if (isNaN(BEGIN_LAUNCH_RETRIES)) BEGIN_LAUNCH_RETRIES = 6;
+      BEGIN_LAUNCH_RETRIES = Math.max(1, BEGIN_LAUNCH_RETRIES);
+      var BEGIN_LAUNCH_INTERVAL_MS = parseInt(ds.beginLaunchIntervalMs || "500", 10);
+      if (isNaN(BEGIN_LAUNCH_INTERVAL_MS)) BEGIN_LAUNCH_INTERVAL_MS = 500;
+      var DEBUG = ds.presentationDebug === "true" || ds.presentationDebug === "1";
+      var SIMULATE_CV_KEYS = ds.startSimulateKeysCv !== "false" && ds.startSimulateKeysCv !== "0";
+      var SIMULATE_CV_EVERY_RETRY = ds.simulateCvEveryRetry === "true" || ds.simulateCvEveryRetry === "1";
+
+      var buildUrl = ds.buildUrl || "build/Build";
+      var buildBasename = ds.buildBasename || "build";
+      var streamingAssetsUrl = ds.streamingAssetsUrl || "build/StreamingAssets";
+      var UNITY_GAME_OBJECT = ds.unityGameObject || "MotoXHostBridge";
+      var UNITY_START_METHOD = ds.unityStartMethod || "BeginLaunchSequence";
+      var UNITY_START_MESSAGE = ds.unityStartMessage != null ? String(ds.unityStartMessage) : "";
+      var FINALIZED_MARKER = (ds.finalizedLogMarker || "gamefinalized").toLowerCase();
+
+      document.documentElement.style.setProperty("--fade-ms", FADE_MS + "ms");
+
+      var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+      var TOTAL_SLIDES = slides.length;
+      for (var si = 0; si < slides.length; si++) {
+        if (slides[si].classList.contains("unity-slide")) {
+          GAME_SLIDE_INDEX = si;
+          break;
+        }
+      }
+      if (TOTAL_SLIDES > 0 && (GAME_SLIDE_INDEX < 0 || GAME_SLIDE_INDEX >= TOTAL_SLIDES)) {
+        console.warn("[presentation] Game slide index is out of range; clamping.");
+        GAME_SLIDE_INDEX = Math.min(Math.max(0, GAME_SLIDE_INDEX), TOTAL_SLIDES - 1);
+      }
+      var continueBtn = document.getElementById("continue-btn");
+      var preloadWrap = document.getElementById("preload-wrap");
+      var preloadLabel = document.getElementById("preload-label");
+      var preloadFill = document.getElementById("preload-fill");
+
+      var currentIndex = 0;
+      var unityInstance = null;
+      var unityReady = false;
+      var gameFinalizedAdvanceDone = false;
+      var beginLaunchTimeoutId = null;
+
+      function clearBeginLaunchTimers() {
+        if (beginLaunchTimeoutId !== null) {
+          clearTimeout(beginLaunchTimeoutId);
+          beginLaunchTimeoutId = null;
+        }
+      }
+
+      function runAfterVisibleFrames(done) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            window.setTimeout(done, 0);
+          });
+        });
+      }
+
+      function simulateUnityCvKeys(reason, afterV) {
+        if (!SIMULATE_CV_KEYS) {
+          if (typeof afterV === "function") afterV();
+          return;
+        }
+        if (currentIndex !== GAME_SLIDE_INDEX) {
+          if (typeof afterV === "function") afterV();
+          return;
+        }
+        var canvas = document.querySelector("#unity-canvas");
+        if (!canvas) {
+          if (typeof afterV === "function") afterV();
+          return;
+        }
+        if (DEBUG) console.log("[presentation] synthetic keys KeyC → KeyV —", reason);
+
+        try {
+          canvas.setAttribute("tabindex", "-1");
+          canvas.focus({ preventScroll: true });
+        } catch (ignore) {}
+
+        var targets = [canvas, document, window];
+
+        function fireOnAll(type, key, code, keyCode) {
+          var init = {
+            key: key,
+            code: code,
+            keyCode: keyCode,
+            which: keyCode,
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          };
+          for (var i = 0; i < targets.length; i++) {
+            try {
+              targets[i].dispatchEvent(new KeyboardEvent(type, init));
+            } catch (ignore) {}
+          }
+        }
+
+        function keyChord(key, code, keyCode, then) {
+          fireOnAll("keydown", key, code, keyCode);
+          window.setTimeout(function () {
+            fireOnAll("keyup", key, code, keyCode);
+            if (typeof then === "function") then();
+          }, 35);
+        }
+
+        keyChord("c", "KeyC", 67, function () {
+          window.setTimeout(function () {
+            keyChord("v", "KeyV", 86, afterV);
+          }, 45);
+        });
+      }
+
+      function invokeBeginLaunchSequence(reason, attemptIndex) {
+        if (currentIndex !== GAME_SLIDE_INDEX) {
+          if (DEBUG) console.log("[presentation] BeginLaunch skipped (slide)", reason, currentIndex, GAME_SLIDE_INDEX);
+          return false;
+        }
+        var msgOk = false;
+        if (unityInstance && typeof unityInstance.SendMessage === "function") {
+          if (DEBUG) {
+            console.log(
+              "[presentation] SendMessage",
+              UNITY_GAME_OBJECT,
+              UNITY_START_METHOD,
+              JSON.stringify(UNITY_START_MESSAGE),
+              "—",
+              reason
+            );
+          }
+          try {
+            unityInstance.SendMessage(UNITY_GAME_OBJECT, UNITY_START_METHOD, UNITY_START_MESSAGE);
+            msgOk = true;
+          } catch (e1) {
+            try {
+              unityInstance.SendMessage(UNITY_GAME_OBJECT, UNITY_START_METHOD);
+              msgOk = true;
+            } catch (e2) {
+              console.warn("[presentation] SendMessage failed (tried 3-arg and 2-arg)", e1, e2);
+            }
+          }
+        } else {
+          if (DEBUG) console.log("[presentation] BeginLaunch: no SendMessage (instance)", reason, !!unityInstance);
+        }
+
+        var doCv = SIMULATE_CV_KEYS && (SIMULATE_CV_EVERY_RETRY || attemptIndex === 1);
+        if (doCv) {
+          simulateUnityCvKeys(reason, null);
+        }
+        return msgOk;
+      }
+
+      function scheduleBeginLaunchSequence(source, skipInitialDelay) {
+        clearBeginLaunchTimers();
+        if (currentIndex !== GAME_SLIDE_INDEX) return;
+
+        var sendsDone = 0;
+        var instanceWaits = 0;
+        var MAX_INSTANCE_WAITS = 180;
+
+        function step(waitMs) {
+          beginLaunchTimeoutId = window.setTimeout(function () {
+            beginLaunchTimeoutId = null;
+            if (currentIndex !== GAME_SLIDE_INDEX) return;
+            runAfterVisibleFrames(function () {
+              if (currentIndex !== GAME_SLIDE_INDEX) return;
+              if (!unityInstance) {
+                instanceWaits++;
+                if (instanceWaits > MAX_INSTANCE_WAITS) {
+                  console.warn("[presentation] Unity instance not ready after extended wait; try reloading.");
+                  return;
+                }
+                if (DEBUG && instanceWaits % 10 === 1) {
+                  console.log("[presentation] Waiting for Unity instance…", instanceWaits, source);
+                }
+                step(BEGIN_LAUNCH_INTERVAL_MS);
+                return;
+              }
+              sendsDone++;
+              invokeBeginLaunchSequence(source + " #" + sendsDone, sendsDone);
+              if (sendsDone < BEGIN_LAUNCH_RETRIES) {
+                step(BEGIN_LAUNCH_INTERVAL_MS);
+              }
+            });
+          }, waitMs);
+        }
+
+        step(skipInitialDelay ? 0 : FADE_MS + BEGIN_LAUNCH_EXTRA_MS);
+      }
+
+      function setSlide(index) {
+        if (index < 0 || index >= TOTAL_SLIDES) return;
+        var leavingGameSlide = currentIndex === GAME_SLIDE_INDEX && index !== GAME_SLIDE_INDEX;
+        slides.forEach(function (el, i) {
+          el.classList.toggle("is-active", i === index);
+        });
+        currentIndex = index;
+        continueBtn.disabled = index >= TOTAL_SLIDES - 1;
+        continueBtn.textContent = index >= TOTAL_SLIDES - 1 ? "Done" : "Continue";
+        refreshPreloadChrome();
+
+        if (leavingGameSlide) {
+          clearBeginLaunchTimers();
+        }
+        if (index === GAME_SLIDE_INDEX) {
+          scheduleBeginLaunchSequence("slide-enter");
+        }
+      }
+
+      function goNext() {
+        if (currentIndex >= TOTAL_SLIDES - 1) return;
+        setSlide(currentIndex + 1);
+      }
+
+      continueBtn.addEventListener("click", goNext);
+
+      function installGameFinalizedHook() {
+        function considerAdvance(merged) {
+          if (gameFinalizedAdvanceDone) return;
+          if (typeof merged !== "string") return;
+          if (merged.toLowerCase().indexOf(FINALIZED_MARKER) === -1) return;
+          if (currentIndex !== GAME_SLIDE_INDEX) return;
+          gameFinalizedAdvanceDone = true;
+          goNext();
+        }
+        ["log", "info", "debug"].forEach(function (method) {
+          var orig = console[method];
+          if (typeof orig !== "function") return;
+          console[method] = function () {
+            considerAdvance(Array.prototype.map.call(arguments, String).join(" "));
+            return orig.apply(console, arguments);
+          };
+        });
+      }
+
+      installGameFinalizedHook();
+
+      function updatePreloadProgress(p) {
+        var pct = Math.round(100 * p);
+        preloadFill.style.width = pct + "%";
+        preloadLabel.textContent = "Game loading — " + pct + "%";
+      }
+
+      function refreshPreloadChrome() {
+        var beforeGame = currentIndex < GAME_SLIDE_INDEX;
+        if (!beforeGame) {
+          preloadWrap.hidden = true;
+          return;
+        }
+        preloadWrap.hidden = false;
+        if (unityReady) {
+          preloadLabel.textContent = "Game ready";
+          preloadFill.style.width = "100%";
+        }
+      }
+
+      function unityShowBanner(msg, type) {
+        var warningBanner = document.querySelector("#unity-warning");
+        if (!warningBanner) return;
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+        }
+        var div = document.createElement("div");
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type === "error") div.style.cssText = "background: red; padding: 10px; color: #fff;";
+        else if (type === "warning") {
+          div.style.cssText = "background: yellow; padding: 10px; color: #000;";
+          window.setTimeout(function () {
+            if (div.parentNode) warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+
+      var loaderUrl = buildUrl + "/" + buildBasename + ".loader.js";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/" + buildBasename + ".data",
+        frameworkUrl: buildUrl + "/" + buildBasename + ".framework.js",
+        codeUrl: buildUrl + "/" + buildBasename + ".wasm",
+        streamingAssetsUrl: streamingAssetsUrl,
+        companyName: ds.companyName || "motoxgames",
+        productName: ds.productName || "citylegends",
+        productVersion: ds.productVersion || "0.0.42",
+        showBanner: unityShowBanner,
+      };
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+        document.head.appendChild(meta);
+      }
+
+      loadingBar.style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = function () {
+        createUnityInstance(canvas, config, function (progress) {
+          progressBarFull.style.width = 100 * progress + "%";
+          updatePreloadProgress(progress);
+        }).then(function (instance) {
+          unityInstance = instance;
+          window.unityInstance = instance;
+          unityReady = true;
+          loadingBar.style.display = "none";
+          refreshPreloadChrome();
+          if (currentIndex === GAME_SLIDE_INDEX) {
+            scheduleBeginLaunchSequence("unity-ready", true);
+          }
+        }).catch(function (message) {
+          preloadLabel.textContent = "Game failed to load";
+          console.error(message);
+          alert(message);
+        });
+      };
+      script.onerror = function () {
+        preloadLabel.textContent = "Could not load Unity loader";
+      };
+      document.body.appendChild(script);
+
+      window.presentationBeginLaunch = function () {
+        clearBeginLaunchTimers();
+        runAfterVisibleFrames(function () {
+          invokeBeginLaunchSequence("manual window.presentationBeginLaunch()", 1);
+        });
+      };
+
+      window.presentationSimulateCvKeys = function () {
+        simulateUnityCvKeys("manual window.presentationSimulateCvKeys()", null);
+      };
+
+      setSlide(0);
+      refreshPreloadChrome();
+    })();
+  </script>
+</body>
+</html>
