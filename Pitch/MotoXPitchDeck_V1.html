@@ -2262,9 +2262,9 @@ function playTick(loud) {
     document.body.appendChild(script);
   }
 
-  const originalGoTo = window.goTo;
-  window.goTo = function(n) {
-    originalGoTo(n);
+  const webglGoTo = goTo;
+  goTo = function(n) {
+    webglGoTo(n);
     if (n === 4) {
       setTimeout(initializeWebGL, 100);
     }
