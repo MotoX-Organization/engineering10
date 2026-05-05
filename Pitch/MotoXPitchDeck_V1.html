@@ -2201,17 +2201,22 @@ function playTick(loud) {
 <!-- UNITY WEBGL LOADER -->
 <script src="build/Build/build.loader.js"></script>
 <script>
-  (function() {
+  function initUnityGame() {
     var canvas = document.querySelector("#unity-canvas");
     var loadingBar = document.querySelector("#unity-loading-bar");
     var warningBanner = document.querySelector("#unity-warning");
+
+    if (!canvas) {
+      console.error("Canvas not found");
+      return;
+    }
 
     if (/iPhone|iPad|iPod|Android/g.test(navigator.userAgent)) {
       if (warningBanner) {
         warningBanner.innerHTML = "<p>WebGL builds are not supported on mobile devices.</p>";
         warningBanner.style.display = "block";
       }
-      throw new Error("Unsupported platform");
+      return;
     }
 
     var config = {
@@ -2230,14 +2235,23 @@ function playTick(loud) {
           loadingBar.style.display = progress === 1 ? "none" : "flex";
         }
       }).catch((message) => {
-        console.error("Unity initialization failed:", message);
+        console.error("Unity error:", message);
         if (warningBanner) {
-          warningBanner.innerHTML = "<p>Failed to load game: " + message + "</p>";
+          warningBanner.innerHTML = "<p>Game failed to load</p>";
           warningBanner.style.display = "block";
         }
       });
+    } else {
+      console.warn("createUnityInstance not available yet");
+      setTimeout(initUnityGame, 500);
     }
-  })();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initUnityGame);
+  } else {
+    setTimeout(initUnityGame, 100);
+  }
 </script>
 </body>
 </html>
