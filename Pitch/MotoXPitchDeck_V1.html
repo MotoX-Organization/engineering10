@@ -265,7 +265,7 @@
     inset: 50%; transform: translate(-50%, -50%);
     width: 180px; height: 180px;
     border: none;
-    background: url('file:///Users/cenkgultekin/Downloads/ChatGPT%20Image%20Apr%2025,%202026,%2004_13_43%20PM.png') center/cover no-repeat;
+    background: url('assets/images/ChatGPT Image Apr 25, 2026, 04_13_43 PM.png') center/cover no-repeat;
     border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 40px rgba(224,26,26,0.4);
@@ -451,13 +451,13 @@
 </head>
 <body>
 
-<img id="nav-logo" src="file:///Users/cenkgultekin/Desktop/MotoX%20Assets/Store%20Assets/Logo1024.png" style="position:fixed;top:14px;left:24px;height:38px;width:38px;object-fit:contain;z-index:100;border-radius:6px;opacity:0;transition:opacity .3s" />
+<img id="nav-logo" src="assets/logo/Logo1024.png" style="position:fixed;top:14px;left:24px;height:38px;width:38px;object-fit:contain;z-index:100;border-radius:6px;opacity:0;transition:opacity .3s" />
 <div class="progress" id="progress"></div>
 <div class="key-hint">← <span class="page-number" id="page-number">00</span> → or click to navigate</div>
 <div id="debug-indicator" style="position:fixed;top:20px;left:20px;color:#f1f5f9;font-size:16px;font-weight:700;z-index:100;display:none;">D</div>
 
 <audio id="engine-sound" style="display:none">
-  <source src="file:///Users/cenkgultekin/Downloads/YTDown.com_YouTube_Car-Engine-Start-Sound-Effect-ProSounds_Media_O_qKAtRhPsk_001_1080p.mp4" type="audio/mp4">
+  <source src="assets/audio/YTDown.com_YouTube_Car-Engine-Start-Sound-Effect-ProSounds_Media_O_qKAtRhPsk_001_1080p.mp4" type="audio/mp4">
 </audio>
 
 <div id="start-gate" style="position:fixed;inset:0;z-index:999;background:#0a0b0f;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity 0.5s">
@@ -476,7 +476,7 @@
 
     <!-- LEFT: Logo -->
     <div class="cover-left">
-      <img src="file:///Users/cenkgultekin/Desktop/MotoX%20Assets/Store%20Assets/Logo1024.png" alt="MotoX" />
+      <img src="assets/logo/Logo1024.png" alt="MotoX" />
       <canvas id="hl-canvas"></canvas>
       <div class="cover-left-vignette"></div>
     </div>
@@ -958,16 +958,16 @@
     <!-- WEBGL CONTAINER -->
     <div style="width:100%;max-width:1000px;flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;">
       <div style="position:relative;border-radius:16px;overflow:hidden;width:100%;aspect-ratio:16/9;background:#000;border:1px solid rgba(255,68,0,0.4);box-shadow:0 30px 80px rgba(255,68,0,0.15);">
-        <div id="unity-container" style="position:absolute;inset:0;width:100%;height:100%;">
-          <canvas id="unity-canvas" width="960" height="540" tabindex="-1" style="width:100%;height:100%;display:block;"></canvas>
-          <div id="unity-loading-bar" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);color:#fff;font-size:14px;">
-            <div style="text-align:center;">
-              <div style="font-size:24px;margin-bottom:16px;">🎮</div>
-              <div>Loading game...</div>
-            </div>
-          </div>
-          <div id="unity-warning" style="display:none;"></div>
+        <div id="unity-container" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;">
+          <canvas id="unity-canvas" tabindex="-1" style="width:100%;height:100%;display:block;background:#000;"></canvas>
         </div>
+        <div id="unity-loading-bar" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.95);color:#fff;font-size:14px;z-index:10;">
+          <div style="text-align:center;">
+            <div style="font-size:24px;margin-bottom:16px;">🎮</div>
+            <div>Loading game...</div>
+          </div>
+        </div>
+        <div id="unity-warning" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.95);color:#ff6b6b;font-size:14px;z-index:10;padding:20px;"></div>
       </div>
     </div>
 
@@ -996,7 +996,7 @@
 
           <!-- VIDEO -->
           <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
-            <source src="file:///Users/cenkgultekin/Desktop/MotoX%20Assets/Videos/slide7_v1.mp4" type="video/mp4">
+            <source src="assets/videos/slide7_v1.mp4" type="video/mp4">
           </video>
 
           <!-- TOP LABEL -->
@@ -1110,19 +1110,19 @@
         <!-- 3 SQUARE WIDGETS -->
         <div style="display:flex;gap:12px;">
           <div style="width:120px;height:120px;border:1px solid rgba(255,68,0,0.4);border-radius:8px;background:var(--surface);overflow:hidden;">
-            <img src="file:///Users/cenkgultekin/Downloads/ChatGPT%20Image%20May%203,%202026,%2005_27_31%20PM.png" style="width:100%;height:100%;object-fit:cover;">
+            <img src="assets/images/ChatGPT Image May 3, 2026, 05_27_31 PM.png" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <div style="width:120px;height:120px;border:1px solid rgba(255,68,0,0.4);border-radius:8px;background:var(--surface);overflow:hidden;">
-            <img src="file:///Users/cenkgultekin/Downloads/ChatGPT%20Image%20May%203,%202026,%2010_42_45%20PM.png" style="width:100%;height:100%;object-fit:cover;">
+            <img src="assets/images/ChatGPT Image May 3, 2026, 10_42_45 PM.png" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <div style="width:120px;height:120px;border:1px solid rgba(255,68,0,0.4);border-radius:8px;background:var(--surface);overflow:hidden;">
-            <img src="file:///Users/cenkgultekin/Downloads/ChatGPT%20Image%20May%204,%202026,%2010_19_40%20PM.png" style="width:100%;height:100%;object-fit:cover;">
+            <img src="assets/images/ChatGPT Image May 4, 2026, 10_19_40 PM.png" style="width:100%;height:100%;object-fit:cover;">
           </div>
         </div>
       </div>
 
       <!-- CENTER: GRADIENT LINE IMAGE -->
-      <img src="file:///Users/cenkgultekin/Downloads/ChatGPT%20Image%20May%204,%202026,%2009_58_41%20PM%20Background%20Removed.png" style="height:400px;width:auto;object-fit:contain;">
+      <img src="assets/images/ChatGPT Image May 4, 2026, 09_58_41 PM Background Removed.png" style="height:400px;width:auto;object-fit:contain;">
 
       <!-- RIGHT: THE GAP -->
       <div style="display:flex;flex-direction:column;gap:24px;padding-left:20px;margin-top:-15px;">
@@ -1183,7 +1183,7 @@
         <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
           <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">01</p>
           <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
-            <img src="file:///Users/cenkgultekin/Downloads/w01.png" style="width:100%;height:100%;object-fit:cover;">
+            <img src="assets/images/w01.png" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">Bike Unlocks</h3>
           <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Premium bikes available via purchase or earned through gameplay.</p>
@@ -1193,7 +1193,7 @@
         <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
           <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">02</p>
           <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
-            <img src="file:///Users/cenkgultekin/Downloads/w02.png" style="width:100%;height:100%;object-fit:cover;">
+            <img src="assets/images/w02.png" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">Upgrade Kits</h3>
           <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Engine, transmission, tires — all performance upgrades are purchasable.</p>
@@ -1203,7 +1203,7 @@
         <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
           <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">03</p>
           <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
-            <img src="file:///Users/cenkgultekin/Downloads/w03.png" style="width:100%;height:100%;object-fit:cover;">
+            <img src="assets/images/w03.png" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">Rider Cosmetics</h3>
           <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Outfits, helmets, gloves — purely cosmetic customization.</p>
@@ -1213,7 +1213,7 @@
         <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
           <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">04</p>
           <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
-            <img src="file:///Users/cenkgultekin/Downloads/w04.png" style="width:100%;height:100%;object-fit:cover;">
+            <img src="assets/images/w04.png" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">Crate System</h3>
           <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Bronze & Gold crates with fair and transparent loot distribution.</p>
@@ -1223,7 +1223,7 @@
         <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
           <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">05</p>
           <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
-            <img src="file:///Users/cenkgultekin/Downloads/w05.png" style="width:100%;height:100%;object-fit:cover;">
+            <img src="assets/images/w05.png" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">VIP Pass</h3>
           <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Subscription model with additional value for engaged players.</p>
@@ -1233,7 +1233,7 @@
         <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
           <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">06</p>
           <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
-            <img src="file:///Users/cenkgultekin/Downloads/w06.png" style="width:100%;height:100%;object-fit:cover;">
+            <img src="assets/images/w06.png" style="width:100%;height:100%;object-fit:cover;">
           </div>
           <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">Rewarded Ads</h3>
           <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Watch-to-earn system — always optional, never forced.</p>
@@ -1295,7 +1295,7 @@
   <!-- ══ SLIDE 10: TEAM ══ -->
   <div class="slide center" id="slide-10" style="padding:40px;display:flex;align-items:center;justify-content:center;">
     <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <img src="file:///Users/cenkgultekin/Downloads/teamPhoto.png" style="width:100%;height:100%;object-fit:contain;">
+      <img src="assets/images/teamPhoto.png" style="width:100%;height:100%;object-fit:contain;">
     </div>
   </div>
 
@@ -1400,6 +1400,7 @@ document.getElementById('engine-btn').onclick = (e) => {
   setTimeout(() => goTo(1), 2000);
 };
 
+
 document.addEventListener('keydown', e => {
   if (current === 0) return; // No arrow navigation on home page
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
@@ -1488,8 +1489,8 @@ if (debugMode) {
 const videoPlayer = document.getElementById('slide7-video-player');
 if (videoPlayer) {
   const videos = [
-    'file:///Users/cenkgultekin/Desktop/MotoX%20Assets/Videos/slide7_v1.mp4',
-    'file:///Users/cenkgultekin/Desktop/MotoX%20Assets/Videos/slide7_v2.mp4'
+    'assets/videos/slide7_v1.mp4',
+    'assets/videos/slide7_v2.mp4'
   ];
 
   const contentData = [
@@ -2198,60 +2199,45 @@ function playTick(loud) {
 })();
 </script>
 
-<!-- UNITY WEBGL LOADER -->
+<!-- UNITY WEBGL LOADER - Using original build config -->
 <script src="build/Build/build.loader.js"></script>
 <script>
-  function initUnityGame() {
-    var canvas = document.querySelector("#unity-canvas");
-    var loadingBar = document.querySelector("#unity-loading-bar");
-    var warningBanner = document.querySelector("#unity-warning");
+  var canvas = document.querySelector("#unity-canvas");
+  var loadingBar = document.querySelector("#unity-loading-bar");
+  var warningBanner = document.querySelector("#unity-warning");
 
-    if (!canvas) {
-      console.error("Canvas not found");
-      return;
-    }
-
-    if (/iPhone|iPad|iPod|Android/g.test(navigator.userAgent)) {
+  var config = {
+    dataUrl: "build/Build/build.data",
+    frameworkUrl: "build/Build/build.framework.js",
+    codeUrl: "build/Build/build.wasm",
+    streamingAssetsUrl: "build/StreamingAssets",
+    companyName: "motoxgames",
+    productName: "citylegends",
+    productVersion: "0.0.42",
+    showBanner: function(msg, type) {
       if (warningBanner) {
-        warningBanner.innerHTML = "<p>WebGL builds are not supported on mobile devices.</p>";
-        warningBanner.style.display = "block";
+        warningBanner.innerHTML = msg;
+        warningBanner.style.display = 'block';
       }
-      return;
     }
+  };
 
-    var config = {
-      dataUrl: "build/Build/build.data",
-      frameworkUrl: "build/Build/build.framework.js",
-      codeUrl: "build/Build/build.wasm",
-      streamingAssetsUrl: "build/StreamingAssets",
-      companyName: "motoxgames",
-      productName: "citylegends",
-      productVersion: "0.0.42",
-    };
+  loadingBar.style.display = "block";
 
-    if (typeof createUnityInstance === "function") {
-      createUnityInstance(canvas, config, (progress) => {
-        if (loadingBar) {
-          loadingBar.style.display = progress === 1 ? "none" : "flex";
-        }
-      }).catch((message) => {
-        console.error("Unity error:", message);
-        if (warningBanner) {
-          warningBanner.innerHTML = "<p>Game failed to load</p>";
-          warningBanner.style.display = "block";
-        }
-      });
-    } else {
-      console.warn("createUnityInstance not available yet");
-      setTimeout(initUnityGame, 500);
-    }
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initUnityGame);
-  } else {
-    setTimeout(initUnityGame, 100);
-  }
+  var script = document.createElement("script");
+  script.src = "build/Build/build.loader.js";
+  script.onload = () => {
+    createUnityInstance(canvas, config, (progress) => {
+      if (loadingBar) {
+        loadingBar.style.width = (100 * progress) + "%";
+      }
+    }).then((unityInstance) => {
+      loadingBar.style.display = "none";
+    }).catch((message) => {
+      alert(message);
+    });
+  };
+  document.body.appendChild(script);
 </script>
 </body>
 </html>
