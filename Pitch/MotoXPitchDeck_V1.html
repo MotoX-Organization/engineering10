@@ -947,9 +947,27 @@
 
   </div>
 
-  <!-- ══ SLIDE 5: FEEL THE EXPERIENCE (EMPTY) ══ -->
-  <div class="slide" id="slide-5">
-    <h2 class="gradient-text">Feel the Experience</h2>
+  <!-- ══ SLIDE 5: FEEL THE EXPERIENCE (WEBGL) ══ -->
+  <div class="slide" id="slide-5" style="padding:60px 80px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;">
+
+    <!-- TITLE AT TOP -->
+    <div style="margin-bottom:40px;text-align:center;">
+      <div class="tag">Interactive Experience</div>
+      <h2 class="gradient-text" style="margin-top:12px;">Feel the Experience</h2>
+    </div>
+
+    <!-- WEBGL CONTAINER -->
+    <div style="width:100%;max-width:1000px;flex:1;display:flex;flex-direction:column;justify-content:center;">
+      <div style="position:relative;border-radius:16px;overflow:hidden;height:600px;background:#000;border:1px solid rgba(255,68,0,0.4);box-shadow:0 30px 80px rgba(255,68,0,0.15);">
+        <div id="unity-container" style="position:absolute;inset:0;width:100%;height:100%;">
+          <canvas id="unity-canvas" width="960" height="540" style="width:100%;height:100%;display:block;"></canvas>
+          <div id="unity-loading-bar" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);color:#fff;font-size:14px;">
+            Loading game...
+          </div>
+          <div id="unity-warning" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
 
   </div>
 
