@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MotoX: City Legends — Pitch Deck</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    /* ── BACKGROUND PALETTE ── */
+    --bg: #0a0b0f;
+    --surface: #12141c;
+    --surface2: #1a1d2a;
+    --surface3: #232738;
+    --border: #252840;
+
+    /* ── PRIMARY ACCENT (Racing Red/Orange) ── */
+    --accent: #ff4400;
+    --accent-dark: #cc3300;
+    --accent-light: #ff6b35;
+    --accent2: #ff6b35;
+
+    /* ── SECONDARY COLORS ── */
+    --cyan: #00d9ff;
+    --cyan-dark: #0099cc;
+    --blue: #6366f1;
+    --green: #22c55e;
+    --yellow: #ffd60a;
+
+    /* ── TEXT COLORS ── */
+    --text: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --muted: #64748b;
+
+    /* ── DESIGN TOKENS ── */
+    --radius: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 4px 12px rgba(0,0,0,0.3);
+    --shadow-md: 0 12px 32px rgba(0,0,0,0.4);
+    --shadow-lg: 0 30px 80px rgba(255,68,0,0.2);
+    --glow-accent: 0 0 24px rgba(255,68,0,0.25);
+    --blur: blur(12px);
+
+    /* ── TYPOGRAPHY TOKENS ── */
+    --font-md: 16px;
+  }
+
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow: hidden; }
+
+  /* ── DECK WRAPPER ── */
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px 80px; opacity: 0; pointer-events: none; transition: opacity .4s ease; }
+  .slide.active { opacity: 1; pointer-events: all; }
+
+  /* ── NAV ── */
+  .nav { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); display: none !important; align-items: center; gap: 16px; z-index: 100; background: rgba(18,20,28,.9); border: 1px solid var(--border); border-radius: 40px; padding: 10px 20px; backdrop-filter: blur(12px); }
+  .nav-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; padding: 4px 8px; transition: color .2s; }
+  .nav-btn:hover { color: var(--text); }
+  .nav-dots { display: flex; gap: 6px; }
+  .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); cursor: pointer; transition: all .2s; }
+  .nav-dot.active { background: var(--accent); width: 20px; border-radius: 3px; }
+  .slide-counter { font-size: 12px; color: var(--muted); min-width: 40px; text-align: center; }
+
+  @keyframes flipPage {
+    0% { transform: rotateY(0deg) scale(1); opacity: 1; }
+    50% { transform: rotateY(90deg) scale(0.8); opacity: 0; }
+    100% { transform: rotateY(0deg) scale(1); opacity: 1; }
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .4s ease; z-index: 100; }
+
+  /* ── LOGO BADGE ── */
+  .logo-badge { position: fixed; top: 24px; left: 32px; font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; z-index: 100; }
+
+  /* ── TYPOGRAPHY ── */
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 16px; }
+  h1 { font-size: clamp(36px, 5vw, 64px); font-weight: 900; line-height: 1.1; }
+  h2 { font-size: clamp(28px, 3.5vw, 44px); font-weight: 800; line-height: 1.15; }
+  h3 { font-size: clamp(18px, 2vw, 24px); font-weight: 700; }
+  .lead { font-size: clamp(16px, 1.6vw, 20px); color: #94a3b8; line-height: 1.6; max-width: 700px; }
+  .gradient-text { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  /* ── LAYOUT HELPERS ── */
+  .center { text-align: center; align-items: center; }
+  .left { align-items: flex-start; }
+  .gap-sm { gap: 12px; }
+  .gap-md { gap: 24px; }
+  .gap-lg { gap: 40px; }
+  .col { display: flex; flex-direction: column; }
+  .row { display: flex; flex-direction: row; }
+  .w-full { width: 100%; }
+  .mt-sm { margin-top: 12px; }
+  .mt-md { margin-top: 24px; }
+  .mt-lg { margin-top: 40px; }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; width: 100%; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; width: 100%; }
+
+  /* ── CARDS ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+  .card.accent-border { border-color: var(--accent); box-shadow: 0 0 24px rgba(249,115,22,.1); }
+  .card-icon { font-size: 28px; margin-bottom: 12px; }
+  .card h3 { margin-bottom: 8px; }
+  .card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* ── STAT ── */
+  .stat-big { font-size: clamp(40px, 5vw, 72px); font-weight: 900; line-height: 1; }
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* ── PILL ── */
+  .pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(249,115,22,.12); border: 1px solid rgba(249,115,22,.3); color: var(--accent2); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px; }
+  .pill.blue { background: rgba(99,102,241,.12); border-color: rgba(99,102,241,.3); color: #a5b4fc; }
+  .pill.green { background: rgba(34,197,94,.12); border-color: rgba(34,197,94,.3); color: #86efac; }
+
+  /* ── LIST ── */
+  .check-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .check-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.5; }
+  .check-list li::before { content: "→"; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── DIVIDER ── */
+  .divider { width: 60px; height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; margin: 20px 0; }
+
+  /* ── BIKE TIER ── */
+  .bike-tier { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+  .bike-tier .tier-name { font-weight: 700; font-size: 14px; }
+  .bike-tier .tier-desc { font-size: 12px; color: var(--muted); }
+  .tier-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .tier-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+  /* ── TIMELINE ── */
+  .timeline { display: flex; gap: 0; width: 100%; position: relative; }
+  .timeline::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 2px; background: var(--border); }
+  .tl-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 12px; position: relative; }
+  .tl-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); z-index: 1; flex-shrink: 0; }
+  .tl-dot.dim { background: var(--border); }
+  .tl-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: .5px; }
+  .tl-title { font-size: 13px; font-weight: 600; text-align: center; line-height: 1.4; }
+
+  /* ── COVER SLIDE ── */
+  #slide-1 { padding: 0; background: #07080c; overflow: hidden; }
+
+  /* particles */
+  #slide-1 canvas { position: absolute; inset: 0; z-index: 0; }
+
+  /* left half — logo */
+  .cover-left {
+    position: absolute; left: 0; top: 0; width: 50%; height: 100%;
+    overflow: hidden; z-index: 2;
+  }
+  .cover-left img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center center;
+    opacity: 0; transform: scale(1.08);
+    transition: opacity 0.8s cubic-bezier(.22,1,.36,1), transform 0.8s cubic-bezier(.22,1,.36,1);
+  }
+
+  /* headlight canvas sits over logo */
+  #hl-canvas { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+
+  /* dark vignette on left/top/bottom edges so logo bleeds cleanly */
+  .cover-left-vignette {
+    position: absolute; inset: 0; z-index: 4; pointer-events: none;
+    background:
+      linear-gradient(to right,  rgba(7,8,12,.65) 0%, transparent 20%),
+      linear-gradient(to bottom, rgba(7,8,12,.55) 0%, transparent 22%),
+      linear-gradient(to top,    rgba(7,8,12,.55) 0%, transparent 22%);
+  }
+
+  /* vertical divider */
+  .cover-divider {
+    position: absolute; left: 50%; top: 50%; width: 1px; height: 0;
+    background: linear-gradient(to bottom, transparent, rgba(224,26,26,.6) 30%, rgba(224,26,26,.6) 70%, transparent);
+    z-index: 3;
+  }
+
+  /* right half — content */
+  .cover-right {
+    position: absolute; right: 0; top: 0; width: 50%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 7% 0 6%; z-index: 2;
+  }
+
+  /* animated text blocks */
+  .cv-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 20px;
+    opacity: 0;
+  }
+  .cv-title {
+    font-size: clamp(30px, 3.4vw, 52px); font-weight: 900; line-height: 1.08;
+    opacity: 0; min-height: 4em;
+  }
+  .cv-title span { color: var(--accent); }
+  .cv-sub {
+    font-size: clamp(13px, 1.3vw, 16px); color: #8292a8; line-height: 1.7;
+    margin-top: 18px; max-width: 380px;
+    opacity: 0;
+  }
+  .cv-divider-h {
+    width: 0; height: 3px; border-radius: 2px; margin: 28px 0;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+
+
+  .engine-btn-container {
+    position: relative;
+    margin-top: 32px;
+    display: flex; align-items: center; justify-content: center;
+    width: 280px; height: 280px;
+    opacity: 0;
+  }
+
+  .engine-btn-container.show {
+    animation: containerFadeIn 0.8s ease forwards;
+  }
+
+  @keyframes containerFadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* Outer animated rings */
+  .engine-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    inset: 0;
+  }
+
+  .engine-ring-1 {
+    border-color: rgba(224,26,26,0.3);
+    animation: ringRotate1 8s linear infinite;
+    width: 100%; height: 100%;
+  }
+
+  .engine-ring-2 {
+    border-color: rgba(224,26,26,0.2);
+    animation: ringRotate2 12s linear infinite reverse;
+    width: 85%; height: 85%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .engine-ring-3 {
+    border-color: rgba(255,100,50,0.25);
+    animation: ringPulse 2.5s ease-in-out infinite;
+    width: 75%; height: 75%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes ringRotate1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes ringRotate2 { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+  @keyframes ringPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(224,26,26,0.4), inset 0 0 20px rgba(224,26,26,0.2); }
+    50% { box-shadow: 0 0 40px rgba(224,26,26,0.6), inset 0 0 30px rgba(224,26,26,0.3); }
+  }
+
+  /* Center button */
+  .engine-btn {
+    position: absolute;
+    inset: 50%; transform: translate(-50%, -50%);
+    width: 180px; height: 180px;
+    border: none;
+    background: url('file:///Users/cenkgultekin/Downloads/ChatGPT%20Image%20Apr%2025,%202026,%2004_13_43%20PM.png') center/cover no-repeat;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 40px rgba(224,26,26,0.4);
+    transition: all 0.3s ease;
+    z-index: 2;
+  }
+
+  .engine-btn:hover {
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 60px rgba(224,26,26,0.6);
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  .engine-btn:active {
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+
+  .engine-btn-container.pulsing .engine-ring-3 {
+    animation: ringPulseActive 0.6s ease-out;
+  }
+
+  @keyframes ringPulseActive {
+    from { width: 75%; height: 75%; opacity: 1; }
+    to { width: 95%; height: 95%; opacity: 0; }
+  }
+
+  .cv-badge {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 28px;
+    background: rgba(224,26,26,.1); border: 1px solid rgba(224,26,26,.3);
+    color: var(--accent2); font-size: 12px; font-weight: 700;
+    padding: 7px 16px; border-radius: 20px;
+    opacity: 0;
+  }
+  @keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .cv-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+
+
+  /* red ambient glow behind logo */
+  .cover-glow {
+    position: absolute; left: 25%; top: 50%; transform: translate(-50%,-50%);
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(224,26,26,.18) 0%, transparent 70%);
+    z-index: 1; animation: glowPulse 3s ease-in-out infinite;
+  }
+  @keyframes glowPulse { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1} 50%{transform:translate(-50%,-50%) scale(1.15);opacity:.7} }
+
+
+  /* ── AGENDA SLIDE ── */
+  #slide-3 { background: #0a0b0f; }
+  .agenda-list { display: flex; flex-direction: column; gap: 0; width: 100%; max-width: 800px; }
+  .agenda-item { display: flex; align-items: center; gap: 20px; padding: 14px 20px; border-bottom: 1px solid var(--border); transition: background .2s; cursor: default; }
+  .agenda-item:first-child { border-top: 1px solid var(--border); }
+  .agenda-item:hover { background: var(--surface); }
+  .agenda-num { font-size: 12px; font-weight: 700; color: var(--accent); min-width: 24px; }
+  .agenda-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .agenda-sub { font-size: 12px; color: var(--muted); }
+
+  /* ── PROBLEM SLIDE ── */
+  .problem-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; text-align: center; }
+
+  /* ── MONETIZATION ── */
+  .mono-row { display: flex; align-items: center; gap: 16px; padding: 14px 20px; background: var(--surface2); border-radius: 8px; border-left: 3px solid var(--accent); }
+  .mono-row .mono-icon { font-size: 22px; flex-shrink: 0; }
+  .mono-row .mono-title { font-weight: 600; font-size: 15px; }
+  .mono-row .mono-sub { font-size: 12px; color: var(--muted); }
+
+  /* ── TEAM ── */
+  .team-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; text-align: center; }
+  .team-avatar { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #fff; margin: 0 auto 14px; }
+  .team-name { font-weight: 700; font-size: 16px; }
+  .team-role { font-size: 13px; color: var(--accent); margin-top: 4px; font-weight: 600; }
+  .team-skills { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .team-skill { font-size: 11px; background: var(--surface2); border: 1px solid var(--border); padding: 3px 10px; border-radius: 20px; color: var(--muted); }
+
+  /* ── CTA ── */
+  #slide-12 { background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(249,115,22,.12) 0%, transparent 70%), var(--bg); }
+  .cta-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-weight: 700; font-size: 16px; padding: 14px 32px; border-radius: 8px; text-decoration: none; margin-top: 32px; cursor: default; }
+
+  /* ── KEYBOARD HINT ── */
+  .key-hint { position: fixed; top: 24px; right: 32px; font-size: 11px; color: var(--muted); z-index: 100; }
+  .key-hint .page-number { font-size: 16px; font-weight: 900; color: var(--accent); display: inline-block; min-width: 20px; text-align: center; }
+
+  /* Hide eyebrow on home page */
+  #slide-1 .cv-eyebrow { display: none !important; }
+
+  /* Badge repositioned to top right */
+  .cv-badge {
+    position: fixed !important;
+    top: 24px !important;
+    right: 32px !important;
+    margin-top: 0 !important;
+    display: flex !important;
+  }
+
+  /* Clean start gate - no text */
+  #start-gate > div { text-align: center; color: rgba(241,245,249,0.3); opacity: 0.5; }
+  #start-gate > div > div:first-child { font-size: 28px; margin-bottom: 12px; }
+  #start-gate > div > div:last-child { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+  #start-gate { background: #0a0b0f; cursor: pointer; }
+
+  /* ── SLIDE 7 ANIMATIONS ── */
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes countUp {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .slide7-title { animation: slideInLeft 0.8s ease forwards; }
+  .slide7-subtitle { animation: slideInLeft 0.8s ease 0.2s forwards; opacity: 0; }
+  .slide7-video { animation: fadeInUp 0.8s ease 0.4s forwards; opacity: 0; }
+
+  .slide7-system-card { animation: slideInRight 0.6s ease forwards; }
+  .slide7-system-card:nth-child(1) { animation-delay: 0.3s; opacity: 0; }
+  .slide7-system-card:nth-child(2) { animation-delay: 0.5s; opacity: 0; }
+  .slide7-system-card:nth-child(3) { animation-delay: 0.7s; opacity: 0; }
+  .slide7-system-card:nth-child(4) { animation-delay: 0.9s; opacity: 0; }
+
+  .slide7-progress-item { animation: fadeInUp 0.6s ease forwards; }
+  .slide7-progress-item:nth-child(1) { animation-delay: 0.4s; opacity: 0; }
+  .slide7-progress-item:nth-child(2) { animation-delay: 0.6s; opacity: 0; }
+  .slide7-progress-item:nth-child(3) { animation-delay: 0.8s; opacity: 0; }
+  .slide7-progress-item:nth-child(4) { animation-delay: 1s; opacity: 0; }
+
+  @keyframes contentFadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+  }
+
+  @keyframes contentFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide7-content-fade-out { animation: contentFadeOut 0.3s ease forwards; }
+  .slide7-content-fade-in { animation: contentFadeIn 0.4s ease 0.1s forwards; opacity: 0; }
+
+  .slide7-widget { animation: slideInRight 0.7s ease forwards; }
+  .slide7-widget:nth-child(1) { animation-delay: 0.3s; opacity: 0; }
+  .slide7-widget:nth-child(2) { animation-delay: 0.5s; opacity: 0; }
+
+  /* ── GLOW BORDER ── */
+  .glow-border { box-shadow: 0 0 6px 1px rgba(255,68,0,0.3), var(--shadow-md); }
+
+  /* ── SPEAKER NOTES ── */
+  #speaker-notes {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 0;
+    background: linear-gradient(to top, rgba(18,20,28,0.98), rgba(18,20,28,0.95));
+    border-top: 1px solid var(--border);
+    overflow: hidden; transition: height 0.3s ease;
+    z-index: 50; padding: 0;
+  }
+
+  #speaker-notes.show {
+    height: 200px;
+    padding: 16px 24px;
+  }
+
+  #speaker-notes-content {
+    color: #94a3b8; font-size: 14px; line-height: 1.6;
+    max-width: 90%; white-space: pre-wrap;
+  }
+
+  #speaker-notes-label {
+    display: inline-block; font-size: 11px; color: var(--accent);
+    font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<img id="nav-logo" src="file:///Users/cenkgultekin/Desktop/MotoX%20Assets/Store%20Assets/Logo1024.png" style="position:fixed;top:14px;left:24px;height:38px;width:38px;object-fit:contain;z-index:100;border-radius:6px;opacity:0;transition:opacity .3s" />
+<div class="progress" id="progress"></div>
+<div class="key-hint">← <span class="page-number" id="page-number">00</span> → or click to navigate</div>
+<div id="debug-indicator" style="position:fixed;top:20px;left:20px;color:#f1f5f9;font-size:16px;font-weight:700;z-index:100;display:none;">D</div>
+
+<audio id="engine-sound" style="display:none">
+  <source src="file:///Users/cenkgultekin/Downloads/YTDown.com_YouTube_Car-Engine-Start-Sound-Effect-ProSounds_Media_O_qKAtRhPsk_001_1080p.mp4" type="audio/mp4">
+</audio>
+
+<div id="start-gate" style="position:fixed;inset:0;z-index:999;background:#0a0b0f;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity 0.5s">
+  <div style="text-align:center;color:#f1f5f9">
+    <div style="font-size:48px;margin-bottom:20px">▶</div>
+    <div style="font-size:14px;letter-spacing:2px;text-transform:uppercase">Click to begin</div>
+  </div>
+</div>
+
+<div class="deck" id="deck">
+
+  <!-- ══ SLIDE 1: COVER ══ -->
+  <div class="slide" id="slide-1">
+    <canvas id="cover-particles"></canvas>
+    <div class="cover-glow"></div>
+
+    <!-- LEFT: Logo -->
+    <div class="cover-left">
+      <img src="file:///Users/cenkgultekin/Desktop/MotoX%20Assets/Store%20Assets/Logo1024.png" alt="MotoX" />
+      <canvas id="hl-canvas"></canvas>
+      <div class="cover-left-vignette"></div>
+    </div>
+
+    <!-- Vertical divider -->
+    <div class="cover-divider"></div>
+
+    <!-- RIGHT: Animated content -->
+    <div class="cover-right">
+      <div class="cv-eyebrow">Racing Physics Platform · 2026</div>
+      <div class="cv-title">We Built<br>the Engine<br><span>Racing</span><br>Deserved.</div>
+      <p class="cv-sub">Not just a game — a universal vehicle physics platform. RPM curves, torque dynamics, gear behavior. Engineered once. Powers any vehicle, any race, forever.</p>
+      <div class="cv-divider-h"></div>
+      <div class="engine-btn-container" id="engine-container">
+        <div class="engine-ring engine-ring-1"></div>
+        <div class="engine-ring engine-ring-2"></div>
+        <div class="engine-ring engine-ring-3"></div>
+        <button class="engine-btn" id="engine-btn"></button>
+      </div>
+      <div class="cv-badge">● Platform Alpha · Live Now</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: THE OPPORTUNITY (PREVIEW) ══ -->
+  <div class="slide" id="slide-2" style="padding:60px 80px !important;display:flex !important;flex-direction:column !important;justify-content:flex-start !important;align-items:center !important;padding-top:10px !important;background:var(--bg);overflow-y:auto;">
+
+    <!-- HEADER -->
+    <div style="margin-bottom:60px;max-width:100%;transform:translate(-150px, 40px);">
+      <div style="font-size:var(--font-md);color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;">The Opportunity</div>
+      <h1 style="font-size:48px;font-weight:900;line-height:1.1;margin:0;color:var(--text);">
+        <span style="color:var(--text);">RACING GAMES ARE BIG —</span><br>
+        <span style="color:var(--accent);">BUT NOT EVOLVING</span>
+      </h1>
+    </div>
+
+    <!-- CARDS GRID -->
+    <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:40px;margin-bottom:60px;">
+
+      <!-- CARD 1: Gameplay Stagnation -->
+      <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.4);border-radius:16px;overflow:hidden;transition:all 0.3s ease;box-shadow:0 30px 80px rgba(255,68,0,0.15);">
+        <div style="width:100%;height:180px;border-bottom:1px solid rgba(255,68,0,0.3);overflow:hidden;display:grid;grid-template-columns:1fr 2px 1fr;gap:0;">
+          <img src="assets/images/gameplay-drag-racing.png" style="width:100%;height:100%;object-fit:cover;display:block;">
+          <div style="background:var(--accent);"></div>
+          <img src="assets/images/gameplay-track-racing.png" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </div>
+        <div style="padding:24px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="width:32px;height:32px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:14px;">1</div>
+            <h3 style="font-size:16px;font-weight:700;color:var(--accent);margin:0;">Gameplay Stagnation</h3>
+          </div>
+          <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0;">Different games, same core loops. Track racing or drag racing — little evolution.</p>
+        </div>
+      </div>
+
+      <!-- CARD 2: Motorcycle Gap -->
+      <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.4);border-radius:16px;overflow:hidden;transition:all 0.3s ease;box-shadow:0 30px 80px rgba(255,68,0,0.15);">
+        <div style="width:100%;height:180px;border-bottom:1px solid rgba(255,68,0,0.3);overflow:hidden;">
+          <img src="assets/images/motorcycle-gap.png" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </div>
+        <div style="padding:24px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="width:32px;height:32px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:14px;">2</div>
+            <h3 style="font-size:16px;font-weight:700;color:var(--accent);margin:0;">Motorcycle Gap</h3>
+          </div>
+          <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0;">High-quality motorcycle racing experiences are still limited and underdeveloped.</p>
+        </div>
+      </div>
+
+      <!-- CARD 3: Weak Mixed Racing -->
+      <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.4);border-radius:16px;overflow:hidden;transition:all 0.3s ease;box-shadow:0 30px 80px rgba(255,68,0,0.15);">
+        <div style="width:100%;height:180px;border-bottom:1px solid rgba(255,68,0,0.3);overflow:hidden;">
+          <img src="assets/images/mixed-racing-hero.png" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </div>
+        <div style="padding:24px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="width:32px;height:32px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:14px;">3</div>
+            <h3 style="font-size:16px;font-weight:700;color:var(--accent);margin:0;">Weak Mixed Racing</h3>
+          </div>
+          <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0;">Cars and motorcycles rarely coexist in a meaningful, balanced experience.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FINAL BLOCK -->
+    <div style="background:var(--surface);border:2px solid rgba(255,68,0,0.4);border-radius:16px;padding:32px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 30px 80px rgba(255,68,0,0.15);transform:translateY(-40px);">
+
+      <div style="display:flex;align-items:center;gap:24px;flex:1;">
+        <div style="width:64px;height:64px;border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="32" height="32" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="4" fill="var(--accent)"/>
+          </svg>
+        </div>
+        <div>
+          <p style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:0;margin-bottom:4px;">The Market Keeps Adding Content</p>
+          <p style="font-size:24px;font-weight:900;color:var(--accent);margin:0;line-height:1.2;">But Not Better Experiences.</p>
+        </div>
+      </div>
+
+      <div style="color:var(--accent);flex-shrink:0;">
+        <svg width="48" height="48" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M5 12h14M13 5l7 7-7 7"/>
+        </svg>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ══ SLIDE 3: PROBLEM ══ -->
+  <div class="slide" id="slide-3" style="padding:60px 80px;display:flex;align-items:center;justify-content:center;background:var(--bg);">
+    <img src="problem-reference.png" style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;">
+    <div style="display:none;">
+      <!-- ALL ELEMENTS HIDDEN AND PRESERVED FOR LATER -->
+
+      <!-- Top Section -->
+      <div style="margin-bottom:50px;">
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:16px">The Problem</div>
+        <h1 style="font-size:70px;font-weight:900;line-height:1;margin:0;color:var(--text)">$10B RACING MARKET.</h1>
+        <h1 style="font-size:70px;font-weight:900;line-height:1.1;margin:0;color:var(--accent);font-style:italic">10-YEAR-OLD GAMEPLAY.</h1>
+        <p style="font-size:16px;line-height:1.6;color:var(--text-secondary);margin:24px 0 0 0;max-width:800px;">
+          The racing genre is massive, but the core experience <span style="color:var(--accent);font-weight:600">hasn't evolved.</span> Players deserve more.
+        </p>
+      </div>
+
+      <!-- Market Stat Card Top Right -->
+      <div style="position:absolute;top:80px;right:80px;border:1px solid var(--surface);border-radius:12px;padding:24px;text-align:center;width:220px;background:var(--bg)">
+        <div style="font-size:28px;margin-bottom:12px">🌐</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-bottom:8px;font-weight:600;line-height:1.3">Global Racing<br>Gambit Market</div>
+        <div style="font-size:48px;font-weight:900;color:var(--accent);margin-bottom:4px">$10B+</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);font-weight:600">And Growing</div>
+      </div>
+
+      <!-- Two Column Boxes -->
+      <div style="display:grid;grid-template-columns:1fr 50px 1fr;gap:24px;flex:1;align-items:stretch;min-height:360px">
+
+        <!-- LEFT BOX: TODAY'S RACING GAMES -->
+        <div style="border:2px solid var(--accent);border-radius:12px;padding:32px;background:rgba(255,68,0,0.02);display:flex;flex-direction:column;">
+          <!-- Title -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+            <span style="font-size:24px">❌</span>
+            <div style="font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:var(--accent)">Today's Racing Games</div>
+          </div>
+
+          <!-- Content Grid: problems | image | stats -->
+          <div style="display:grid;grid-template-columns:100px 1fr 90px;gap:20px;flex:1;">
+
+            <!-- Left: Problem Items -->
+            <div style="display:flex;flex-direction:column;gap:18px;justify-content:center;">
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.25;">Tap-to-shift<br>gameplay</div>
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.25;">Same core loop<br>since 2016</div>
+              <div style="font-size:13px;color:var(--text-secondary);">Cars only</div>
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.25;">Reskinned<br>every year</div>
+            </div>
+
+            <!-- Center: Game Image -->
+            <div style="background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative;border:1px solid var(--surface);min-height:200px;">
+              <div style="position:absolute;top:12px;left:12px;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0.5px">PROGRESS</div>
+              <div style="position:absolute;top:12px;right:12px;font-size:11px;color:var(--muted);font-weight:600">0:12.73</div>
+              <div style="position:absolute;top:28px;left:12px;width:55px;height:3px;background:var(--surface);border-radius:2px;overflow:hidden;">
+                <div style="width:43%;height:100%;background:var(--accent)"></div>
+              </div>
+              <div style="position:absolute;top:12px;right:12px;margin-top:16px;font-size:10px;color:var(--muted);font-weight:600;">1/2</div>
+              <div style="position:absolute;bottom:12px;left:12px;font-size:11px;color:var(--muted);font-style:italic;">Same feel. Different skin.</div>
+              <span style="font-size:12px;color:var(--muted)">[GAME IMAGE]</span>
+            </div>
+
+            <!-- Right: Stats -->
+            <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;gap:16px;">
+              <div style="text-align:center;">
+                <div style="font-size:20px;font-weight:900;color:var(--accent)">43%</div>
+                <div style="font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;font-weight:600">Progress</div>
+              </div>
+              <div style="font-size:32px;font-weight:900;color:var(--accent)">128</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CENTER: VS -->
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <div style="font-size:52px;font-weight:900;color:var(--accent)">VS</div>
+        </div>
+
+        <!-- RIGHT BOX: WHAT PLAYERS EXPECT -->
+        <div style="border:2px solid var(--accent);border-radius:12px;padding:32px;background:rgba(255,68,0,0.02);display:flex;flex-direction:column;">
+          <!-- Title -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+            <span style="font-size:24px">✓</span>
+            <div style="font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:var(--accent)">What Players Expect</div>
+          </div>
+
+          <!-- Content Grid: image | benefits -->
+          <div style="display:grid;grid-template-columns:1fr 130px;gap:20px;flex:1;align-items:center;">
+
+            <!-- Left: Hero Image -->
+            <div style="background:linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px solid var(--surface);min-height:200px;aspect-ratio:1;">
+              <span style="font-size:12px;color:var(--muted)">[HERO IMAGE]</span>
+            </div>
+
+            <!-- Right: Benefit Items -->
+            <div style="display:flex;flex-direction:column;gap:18px;justify-content:center;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="font-size:18px;flex-shrink:0;margin-top:-2px">🎮</span>
+                <span style="font-size:13px;color:var(--text-secondary);line-height:1.25;">Real physics &<br>skill expression</span>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="font-size:18px;flex-shrink:0;margin-top:-2px">🏍️</span>
+                <span style="font-size:13px;color:var(--text-secondary);line-height:1.25;">Motorcycles<br>done right</span>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="font-size:18px;flex-shrink:0;margin-top:-2px">🌐</span>
+                <span style="font-size:13px;color:var(--text-secondary);line-height:1.25;">Cars + Bikes<br>one unified world</span>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="font-size:18px;flex-shrink:0;margin-top:-2px">📈</span>
+                <span style="font-size:13px;color:var(--text-secondary);line-height:1.25;">Meaningful<br>progression</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: SOLUTION ══ -->
+  <div class="slide" id="slide-4-solution" style="padding:0;overflow:hidden;display:flex;flex-direction:row;background:var(--bg);">
+
+    <!-- LEFT 50% - IMAGE GRID (2x2) -->
+    <div style="width:50%;height:100%;padding:40px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(90deg, transparent 0%, rgba(255,68,0,0.05) 100%);">
+
+      <!-- Grid Label -->
+      <div style="font-size:var(--font-md);color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;margin-left:10%;">Our Solution</div>
+
+      <!-- 2x2 Image Grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;width:75%;aspect-ratio:1;margin-left:10%;">
+
+        <!-- Top Left: Motorcycle Hero Garage -->
+        <div class="glow-border" style="position:relative;border-radius:12px;overflow:hidden;">
+          <img src="assets/images/engine/motorcycle_hero_garage.png" style="width:100%;height:100%;object-fit:cover;display:block;">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0.3);"></div>
+        </div>
+
+        <!-- Top Right: Motorcycle Hero Rider -->
+        <div class="glow-border" style="position:relative;border-radius:12px;overflow:hidden;">
+          <img src="assets/images/engine/motorcycle_hero_rider.png" style="width:100%;height:100%;object-fit:cover;display:block;">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0.3);"></div>
+        </div>
+
+        <!-- Bottom Left: Drag Race -->
+        <div class="glow-border" style="position:relative;border-radius:12px;overflow:hidden;">
+          <img src="assets/images/engine/drag_race.png" style="width:100%;height:100%;object-fit:cover;display:block;">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0.3);"></div>
+        </div>
+
+        <!-- Bottom Right: Mixed Track Racing -->
+        <div class="glow-border" style="position:relative;border-radius:12px;overflow:hidden;">
+          <img src="assets/images/engine/mixed_track.png" style="width:100%;height:100%;object-fit:cover;display:block;">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0.3);"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- VERTICAL SEPARATOR -->
+    <div style="width:1px;background:linear-gradient(to bottom, transparent, var(--accent), transparent);opacity:0.5;"></div>
+
+    <!-- RIGHT 50% - CONTENT -->
+    <div style="width:50%;height:100%;padding:40px;display:flex;flex-direction:column;justify-content:center;gap:24px;background:linear-gradient(90deg, rgba(255,68,0,0.05) 0%, transparent 100%);">
+
+      <!-- Title -->
+      <div>
+        <h2 style="font-size:40px;color:var(--text);margin:0;font-weight:800;line-height:1.2;">One Engine.<br><span style="color:var(--accent);">Multiple Racing Experiences.</span></h2>
+      </div>
+
+      <!-- Core Statement -->
+      <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;margin:0;">A unified physics system powering different vehicles, modes, and gameplay styles.</p>
+
+      <!-- Bullet Points -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="color:var(--accent);font-weight:700;flex-shrink:0;">→</span>
+          <span style="font-size:14px;color:var(--text);line-height:1.6;">Drag and track racing powered by the same core system</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="color:var(--accent);font-weight:700;flex-shrink:0;">→</span>
+          <span style="font-size:14px;color:var(--text);line-height:1.6;">Supports motorcycles and cars with realistic behavior</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="color:var(--accent);font-weight:700;flex-shrink:0;">→</span>
+          <span style="font-size:14px;color:var(--text);line-height:1.6;">Built for extensibility across future racing formats</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="color:var(--accent);font-weight:700;flex-shrink:0;">→</span>
+          <span style="font-size:14px;color:var(--text);line-height:1.6;">Designed as a reusable platform, not a single game</span>
+        </div>
+      </div>
+
+      <!-- Power Line -->
+      <div style="margin-top:12px;padding-top:20px;border-top:1px solid rgba(255,68,0,0.2);">
+        <p style="font-size:16px;color:var(--accent);font-weight:700;margin:0;">Built once. Scales across experiences.</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ══ SLIDE 5: PRODUCT & GAMEPLAY ══ -->
+  <div class="slide" id="slide-4" style="padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg);">
+    <img src="assets/images/product-gameplay-full-page.png" style="width:80%;height:80%;object-fit:contain;display:block;" />
+    <!-- HIDDEN GAMEPLAY SECTIONS (BACKUP) -->
+    <div style="display:none;">
+      <div style="background:rgba(255,68,0,0.06);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:24px;">
+        <div style="font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">1. Core Loop</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <!-- Step 1 -->
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:28px;margin-bottom:8px;">🏍️</div>
+            <div style="font-size:11px;color:var(--text);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;line-height:1.4;">SELECT<br>Bike / Rider</div>
+          </div>
+          <div style="color:var(--accent);font-size:20px;font-weight:700;">›</div>
+          <!-- Step 2 -->
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:28px;margin-bottom:8px;">🔧</div>
+            <div style="font-size:11px;color:var(--text);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;line-height:1.4;">UPGRADE &<br>Customize</div>
+          </div>
+          <div style="color:var(--accent);font-size:20px;font-weight:700;">›</div>
+          <!-- Step 3 -->
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:28px;margin-bottom:8px;">🏁</div>
+            <div style="font-size:11px;color:var(--text);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;line-height:1.4;">RACE<br>Skill to Win</div>
+          </div>
+          <div style="color:var(--accent);font-size:20px;font-weight:700;">›</div>
+          <!-- Step 4 -->
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:28px;margin-bottom:8px;">🏆</div>
+            <div style="font-size:11px;color:var(--text);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;line-height:1.4;">EARN<br>Rewards & Progress</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. CORE MECHANIC - RPM BASED SHIFTING -->
+      <div style="background:rgba(255,68,0,0.06);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:24px;">
+        <div style="font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">2. Core Mechanic – RPM Based Shifting</div>
+
+        <div style="display:flex;gap:24px;align-items:center;margin-bottom:16px;">
+          <!-- RPM Gauge (simplified SVG-style) -->
+          <div style="width:120px;height:120px;position:relative;display:flex;align-items:center;justify-content:center;">
+            <div style="width:100%;height:100%;border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle, rgba(255,68,0,0.1) 0%, rgba(255,68,0,0.02) 100%);">
+              <div style="text-align:center;">
+                <div style="font-size:24px;font-weight:900;color:var(--text);">8,750</div>
+                <div style="font-size:10px;color:var(--muted);">RPM</div>
+              </div>
+            </div>
+            <div style="position:absolute;top:10px;right:15px;font-size:12px;color:var(--text);font-weight:700;">4 GEAR</div>
+          </div>
+
+          <!-- Shifting Info -->
+          <div style="flex:1;">
+            <!-- Shifting Bar -->
+            <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin-bottom:16px;gap:0;">
+              <div style="width:40%;background:#22c55e;"></div>
+              <div style="width:35%;background:#ffd60a;"></div>
+              <div style="width:25%;background:var(--accent);"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:16px;text-transform:uppercase;font-weight:700;">
+              <span>PERFECT</span>
+              <span>GOOD</span>
+              <span>MISS</span>
+            </div>
+
+            <!-- Shift Types -->
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:16px;height:16px;border-radius:50%;background:#22c55e;flex-shrink:0;margin-top:2px;"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:var(--text);">TIME YOUR SHIFT</div>
+                  <div style="font-size:10px;color:var(--muted);">Hit the green zone for maximum acceleration.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:16px;height:16px;border-radius:50%;background:#ffd60a;flex-shrink:0;margin-top:2px;"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:var(--text);">GOOD SHIFT</div>
+                  <div style="font-size:10px;color:var(--muted);">Decent power, keep it up.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:16px;height:16px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:2px;"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:var(--text);">MISS</div>
+                  <div style="font-size:10px;color:var(--muted);">Lose speed and time.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. WHAT MAKES IT DIFFERENT -->
+      <div style="background:rgba(255,68,0,0.06);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:24px;">
+        <div style="font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">3. What Makes It Different</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <!-- Motorcycle First -->
+          <div style="text-align:center;">
+            <div style="font-size:32px;margin-bottom:12px;">🏍️</div>
+            <div style="font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Motorcycle First</div>
+            <div style="font-size:11px;color:var(--text-secondary);line-height:1.4;">Built for bikes.<br>Finally.</div>
+          </div>
+          <!-- Skill Driven -->
+          <div style="text-align:center;">
+            <div style="font-size:32px;margin-bottom:12px;">🎯</div>
+            <div style="font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Skill Driven</div>
+            <div style="font-size:11px;color:var(--text-secondary);line-height:1.4;">Master timing,<br>master the race.</div>
+          </div>
+          <!-- Cinematic Racing -->
+          <div style="text-align:center;">
+            <div style="font-size:32px;margin-bottom:12px;">🎬</div>
+            <div style="font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Cinematic Racing</div>
+            <div style="font-size:11px;color:var(--text-secondary);line-height:1.4;">Real speed,<br>Real intensity.</div>
+          </div>
+          <!-- Future Ready -->
+          <div style="text-align:center;">
+            <div style="font-size:32px;margin-bottom:12px;">🌐</div>
+            <div style="font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Future Ready</div>
+            <div style="font-size:11px;color:var(--text-secondary);line-height:1.4;">Designed to scale<br>to cars and beyond.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. GAME MODES -->
+      <div style="background:rgba(255,68,0,0.06);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:24px;">
+        <div style="font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">4. Game Modes (Launch & Beyond)</div>
+
+        <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;">
+          <!-- Drag Race -->
+          <div style="aspect-ratio:4/3;background:linear-gradient(135deg, rgba(255,68,0,0.1) 0%, rgba(255,68,0,0) 100%);border:1px solid rgba(255,68,0,0.3);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px;gap:8px;">
+            <div style="font-size:24px;">🚗</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text);">DRAG RACE</div>
+            <div style="font-size:9px;color:var(--muted);">City Streets</div>
+          </div>
+          <!-- Highway Race -->
+          <div style="aspect-ratio:4/3;background:linear-gradient(135deg, rgba(255,68,0,0.1) 0%, rgba(255,68,0,0) 100%);border:1px solid rgba(255,68,0,0.3);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px;gap:8px;">
+            <div style="font-size:24px;">🛣️</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text);">HIGHWAY RACE</div>
+            <div style="font-size:9px;color:var(--muted);">Mountain Roads</div>
+          </div>
+          <!-- Track Race -->
+          <div style="aspect-ratio:4/3;background:linear-gradient(135deg, rgba(255,68,0,0.1) 0%, rgba(255,68,0,0) 100%);border:1px solid rgba(255,68,0,0.3);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px;gap:8px;">
+            <div style="font-size:24px;">🏁</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text);">TRACK RACE</div>
+            <div style="font-size:9px;color:var(--muted);">Circuits & Loops</div>
+          </div>
+          <!-- More Coming -->
+          <div style="aspect-ratio:4/3;background:linear-gradient(135deg, rgba(255,68,0,0.1) 0%, rgba(255,68,0,0) 100%);border:2px dashed rgba(255,68,0,0.4);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px;gap:8px;">
+            <div style="font-size:24px;">+</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text);">MORE MODES</div>
+            <div style="font-size:9px;color:var(--muted);">Coming Soon</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div>
+
+  </div>
+
+  <!-- ══ SLIDE 5: FEEL THE EXPERIENCE (EMPTY) ══ -->
+  <div class="slide" id="slide-5">
+    <h2 class="gradient-text">Feel the Experience</h2>
+
+  </div>
+
+  <!-- ══ SLIDE 6: CONTENT & TRACTION (LEFT/RIGHT LAYOUT) ══ -->
+  <div class="slide" id="slide-6" style="padding:50px 80px 60px 240px;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;background:var(--bg);">
+
+    <!-- HEADER -->
+    <div style="margin-bottom:24px;">
+      <div style="font-size:var(--font-md);color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">CONTENT & TRACTION</div>
+      <h1 style="font-size:45px;font-weight:900;line-height:1.2;margin:0;">
+        <span style="color:var(--text-secondary);">Built, Tested, and</span>
+        <span style="color:var(--accent);"> Ready.</span>
+      </h1>
+      <p style="font-size:15px;color:var(--muted);margin-top:12px;">From concept to a working system — delivering real-time racing experiences.</p>
+    </div>
+
+    <!-- MAIN GRID (Video + Metrics) -->
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:32px;align-items:start;">
+
+      <!-- LEFT VIDEO SECTION -->
+      <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.4);border-radius:16px;padding:16px;box-shadow:0 30px 80px rgba(255,68,0,0.15);">
+
+        <div style="position:relative;border-radius:12px;overflow:hidden;height:384px;background:#000;">
+
+          <!-- VIDEO -->
+          <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
+            <source src="file:///Users/cenkgultekin/Desktop/MotoX%20Assets/Videos/slide7_v1.mp4" type="video/mp4">
+          </video>
+
+          <!-- TOP LABEL -->
+          <div style="position:absolute;top:16px;left:16px;background:rgba(0,0,0,0.7);padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;">
+            🔴 LIVE IN ENGINE
+          </div>
+
+          <!-- BOTTOM LABEL -->
+          <div style="position:absolute;bottom:16px;left:16px;background:rgba(0,0,0,0.7);padding:12px 16px;border-radius:8px;">
+            <div style="color:var(--accent);font-size:20px;font-weight:700;line-height:1;">17</div>
+            <div style="font-size:11px;color:var(--text);letter-spacing:0.5px;">MOTORCYCLES READY</div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- RIGHT METRICS SECTION -->
+      <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.3);border-radius:16px;padding:16px;height:410px;display:flex;flex-direction:column;justify-content:center;">
+
+        <div style="width:100%;">
+
+          <div style="font-size:var(--font-md);color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:28px;margin-top:-28px;">WHAT WE'VE BUILT</div>
+
+          <!-- ITEMS -->
+          <div style="display:flex;flex-direction:column;gap:22px;">
+
+            <div style="display:flex;gap:13px;align-items:flex-start;">
+              <div style="width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">🏍</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px;">
+                <div style="font-size:22px;font-weight:900;color:var(--text);line-height:1.2;margin:0;">17</div>
+                <div style="font-size:10px;color:var(--text-secondary);line-height:1.3;margin:0;">Motorcycles Built</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:13px;align-items:flex-start;">
+              <div style="width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">🌍</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px;">
+                <div style="font-size:22px;font-weight:900;color:var(--text);line-height:1.2;margin:0;">7</div>
+                <div style="font-size:10px;color:var(--text-secondary);line-height:1.3;margin:0;">Environments Ready</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:13px;align-items:flex-start;">
+              <div style="width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">⚙</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px;">
+                <div style="font-size:18px;font-weight:900;color:var(--text);line-height:1.2;margin:0;">Custom RPM & Physics</div>
+                <div style="font-size:10px;color:var(--text-secondary);line-height:1.3;margin:0;">Built in-house</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:13px;align-items:flex-start;">
+              <div style="width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">⏱</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px;">
+                <div style="font-size:22px;font-weight:900;color:var(--text);line-height:1.2;margin:0;">30+</div>
+                <div style="font-size:10px;color:var(--text-secondary);line-height:1.3;margin:0;">Months of R&D</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:13px;align-items:flex-start;">
+              <div style="width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;">🧩</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px;">
+                <div style="font-size:18px;font-weight:900;color:var(--text);line-height:1.2;margin:0;">Reusable System</div>
+                <div style="font-size:10px;color:var(--text-secondary);line-height:1.3;margin:0;">Scalable across vehicles</div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- DIVIDER -->
+    <div style="margin-top:48px;border-top:1px solid rgba(255,68,0,0.2);"></div>
+
+    <!-- FINAL STATEMENT -->
+    <div style="margin-top:-2px;text-align:center;">
+      <div style="font-size:26px;font-weight:900;color:var(--accent);">⚡ Built and running — not just an idea.</div>
+    </div>
+
+  </div>
+
+  <!-- ══ SLIDE 7: MARKET & OPPORTUNITY ══ -->
+  <div class="slide" id="slide-7" style="padding:60px 80px;display:flex;flex-direction:column;justify-content:flex-start;padding-top:20px;background:var(--bg);overflow-y:auto;">
+
+    <!-- HEADER -->
+    <div style="margin-bottom:20px;">
+      <div style="font-size:var(--font-md);color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">Market & Opportunity</div>
+      <h1 style="font-size:48px;font-weight:900;line-height:1.1;margin:0;color:var(--text);margin-bottom:12px;">
+        A MASSIVE MARKET. STILL <span style="color:var(--accent);">UNDERBUILT.</span>
+      </h1>
+      <p style="font-size:16px;color:var(--muted);margin:0;line-height:1.6;">
+        <span style="color:var(--accent);font-weight:700;">$8B+</span> market.
+        <span style="color:var(--accent);font-weight:700;">500M+</span> players.
+        <span style="color:var(--accent);font-weight:700;"><5%</span> motorcycles
+      </p>
+    </div>
+
+    <!-- CORE SECTION -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:40px;align-items:center;margin-bottom:60px;">
+
+      <!-- LEFT: CARS -->
+      <div style="padding-right:20px;margin-top:-70px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;">Today</div>
+        <h2 style="font-size:64px;font-weight:900;letter-spacing:3px;margin:0;color:var(--text);">CARS</h2>
+        <p style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:8px;margin-bottom:32px;">Dominate the Market</p>
+
+        <!-- 3 SQUARE WIDGETS -->
+        <div style="display:flex;gap:12px;">
+          <div style="width:120px;height:120px;border:1px solid rgba(255,68,0,0.4);border-radius:8px;background:var(--surface);overflow:hidden;">
+            <img src="file:///Users/cenkgultekin/Downloads/ChatGPT%20Image%20May%203,%202026,%2005_27_31%20PM.png" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div style="width:120px;height:120px;border:1px solid rgba(255,68,0,0.4);border-radius:8px;background:var(--surface);overflow:hidden;">
+            <img src="file:///Users/cenkgultekin/Downloads/ChatGPT%20Image%20May%203,%202026,%2010_42_45%20PM.png" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div style="width:120px;height:120px;border:1px solid rgba(255,68,0,0.4);border-radius:8px;background:var(--surface);overflow:hidden;">
+            <img src="file:///Users/cenkgultekin/Downloads/ChatGPT%20Image%20May%204,%202026,%2010_19_40%20PM.png" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER: GRADIENT LINE IMAGE -->
+      <img src="file:///Users/cenkgultekin/Downloads/ChatGPT%20Image%20May%204,%202026,%2009_58_41%20PM%20Background%20Removed.png" style="height:400px;width:auto;object-fit:contain;">
+
+      <!-- RIGHT: THE GAP -->
+      <div style="display:flex;flex-direction:column;gap:24px;padding-left:20px;margin-top:-15px;">
+        <div style="font-size:var(--font-md);color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:2px;">The Gap</div>
+
+        <div style="display:flex;align-items:center;gap:16px;font-size:16px;color:var(--text);">
+          <span style="color:var(--accent);font-size:24px;font-weight:700;">×</span>
+          <span>No real motorcycle racing</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:16px;font-size:16px;color:var(--text);">
+          <span style="color:var(--accent);font-size:24px;font-weight:700;">×</span>
+          <span>No car + bike experience</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:16px;font-size:16px;color:var(--text);">
+          <span style="color:var(--accent);font-size:24px;font-weight:700;">×</span>
+          <span>No physics-based gameplay</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DIVIDER -->
+    <div style="border-top:1px solid rgba(255,68,0,0.2);margin-bottom:40px;margin-top:-100px;"></div>
+
+    <!-- FINAL STATEMENT -->
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:2px solid var(--accent);border-radius:50%;color:var(--accent);font-size:20px;flex-shrink:0;">⚡</div>
+      <p style="font-size:24px;font-weight:700;color:var(--text);margin:0;">
+        The market has scale —
+        <span style="color:var(--accent);">but not enough evolution.</span>
+      </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ SLIDE 8: MONETIZATION ══ -->
+  <div class="slide" id="slide-8" style="padding:80px;display:flex;flex-direction:column;justify-content:flex-start;align-items:flex-start;overflow-y:auto;">
+    <div style="width:100%;max-width:1000px;">
+      <!-- HEADER -->
+      <div style="margin-bottom:32px;margin-top:-70px;">
+        <div style="font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Monetization</div>
+        <h1 style="font-size:48px;font-weight:900;line-height:1.0;margin:0;margin-bottom:16px;color:var(--text);">
+          FAIR ECONOMY.<br><span style="color:var(--accent);">SKILL FIRST. PAY NEVER FORCED.</span>
+        </h1>
+        <p style="font-size:16px;color:var(--muted);margin:0;line-height:1.0;max-width:700px;">
+          A player-first economy that respects time, rewards skill, and keeps every advantage earnable.
+        </p>
+      </div>
+
+      <!-- GRID: 3 COLUMNS x 2 ROWS -->
+      <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;margin-bottom:40px;margin-top:-24px;">
+
+        <!-- CARD 1: Bike Unlocks -->
+        <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
+          <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">01</p>
+          <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
+            <img src="file:///Users/cenkgultekin/Downloads/w01.png" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">Bike Unlocks</h3>
+          <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Premium bikes available via purchase or earned through gameplay.</p>
+        </div>
+
+        <!-- CARD 2: Upgrade Kits -->
+        <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
+          <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">02</p>
+          <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
+            <img src="file:///Users/cenkgultekin/Downloads/w02.png" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">Upgrade Kits</h3>
+          <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Engine, transmission, tires — all performance upgrades are purchasable.</p>
+        </div>
+
+        <!-- CARD 3: Rider Cosmetics -->
+        <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
+          <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">03</p>
+          <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
+            <img src="file:///Users/cenkgultekin/Downloads/w03.png" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">Rider Cosmetics</h3>
+          <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Outfits, helmets, gloves — purely cosmetic customization.</p>
+        </div>
+
+        <!-- CARD 4: Crate System -->
+        <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
+          <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">04</p>
+          <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
+            <img src="file:///Users/cenkgultekin/Downloads/w04.png" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">Crate System</h3>
+          <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Bronze & Gold crates with fair and transparent loot distribution.</p>
+        </div>
+
+        <!-- CARD 5: VIP Pass -->
+        <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
+          <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">05</p>
+          <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
+            <img src="file:///Users/cenkgultekin/Downloads/w05.png" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">VIP Pass</h3>
+          <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Subscription model with additional value for engaged players.</p>
+        </div>
+
+        <!-- CARD 6: Rewarded Ads -->
+        <div style="background:var(--surface);border:1px solid rgba(255,68,0,0.2);border-radius:12px;padding:18px;display:flex;flex-direction:column;position:relative;">
+          <p style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;position:absolute;top:10px;left:10px;margin:0;">06</p>
+          <div style="width:100%;height:126px;background:var(--surface2);border-radius:8px;margin-bottom:12px;overflow:hidden;">
+            <img src="file:///Users/cenkgultekin/Downloads/w06.png" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <h3 style="font-size:14px;font-weight:700;margin:0 0 8px 0;color:var(--text);">Rewarded Ads</h3>
+          <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.3;">Watch-to-earn system — always optional, never forced.</p>
+        </div>
+
+      </div>
+
+      <!-- PHILOSOPHY SECTION -->
+      <div style="padding:20px 0;margin-top:20px;">
+        <p style="font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px 0;">OUR PHILOSOPHY</p>
+        <h3 style="font-size:18px;font-weight:700;margin:0 0 10px 0;color:var(--text);line-height:1.0;">No pay-to-win. Skill + engagement = progression.</h3>
+        <p style="font-size:14px;color:var(--muted);margin:0;line-height:1.0;">Players who invest time are never disadvantaged by those who invest money.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 9: ROADMAP & PLATFORM VISION ══ -->
+  <div class="slide center" id="slide-9">
+    <div class="col" style="width:100%;max-width:900px;align-items:center">
+      <div class="tag">Roadmap</div>
+      <h2>From prototype to <span class="gradient-text">platform.</span></h2>
+      <div class="divider"></div>
+      <div class="timeline mt-lg w-full">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Now</div>
+          <div class="tl-title">Prototype: Core mechanics + 2 cities validated</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Q2 2026</div>
+          <div class="tl-title">Alpha: Feature-complete · All 6 classes · Google Play</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Q3 2026</div>
+          <div class="tl-title">Beta: Soft launch · 20 cities · Multiplayer</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot dim"></div>
+          <div class="tl-label">Q4 2026</div>
+          <div class="tl-title">Global launch · Influencer city program</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot dim"></div>
+          <div class="tl-label">2027</div>
+          <div class="tl-title">Competitive leagues · Platform expansion</div>
+        </div>
+      </div>
+      <div class="row gap-md mt-lg">
+        <span class="pill">🏍️ Prototype: In Progress</span>
+        <span class="pill green">📱 Target: iOS & Android</span>
+        <span class="pill blue">🌍 50+ Cities Planned</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 10: TEAM ══ -->
+  <div class="slide center" id="slide-10" style="padding:40px;display:flex;align-items:center;justify-content:center;">
+    <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+      <img src="file:///Users/cenkgultekin/Downloads/teamPhoto.png" style="width:100%;height:100%;object-fit:contain;">
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 11: CTA ══ -->
+  <div class="slide center" id="slide-11">
+    <div class="tag">Let's Talk</div>
+    <h1 class="gradient-text">MotoX: City Legends</h1>
+    <p class="cover-tagline">We're building the first motorcycle drag racing platform for mobile — with real physics, fair monetization, and a city domination meta that keeps players hooked.</p>
+    <div class="divider" style="margin: 28px auto;"></div>
+    <div class="grid-3 mt-sm" style="max-width:700px;gap:16px">
+      <div style="text-align:center;padding:20px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border)">
+        <div style="font-size:28px;margin-bottom:8px">🎮</div>
+        <div style="font-weight:700;font-size:14px">Playable Demo</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">Available on request</div>
+      </div>
+      <div style="text-align:center;padding:20px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border)">
+        <div style="font-size:28px;margin-bottom:8px">📊</div>
+        <div style="font-weight:700;font-size:14px">Full Deck</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">With financials on request</div>
+      </div>
+      <div style="text-align:center;padding:20px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--accent);box-shadow:0 0 24px rgba(249,115,22,.1)">
+        <div style="font-size:28px;margin-bottom:8px">📧</div>
+        <div style="font-weight:700;font-size:14px">Contact</div>
+        <div style="font-size:12px;color:var(--accent);margin-top:4px">capcomin@gmail.com</div>
+      </div>
+    </div>
+    <div class="cover-pills mt-lg">
+      <span class="pill">🏍️ Prototype Stage</span>
+      <span class="pill green">📱 iOS & Android</span>
+      <span class="pill blue">🌍 Global Launch Q4 2026</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── NAV ── -->
+<div class="nav">
+  <button class="nav-btn" id="prev-btn">←</button>
+  <div class="nav-dots" id="nav-dots"></div>
+  <button class="nav-btn" id="next-btn">→</button>
+  <div class="slide-counter" id="slide-counter"></div>
+</div>
+
+<!-- ── SPEAKER NOTES ── -->
+<div id="speaker-notes">
+  <div id="speaker-notes-label">Speaker Notes</div>
+  <div id="speaker-notes-content"></div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+const dotsEl = document.getElementById('nav-dots');
+const counterEl = document.getElementById('slide-counter');
+const progressEl = document.getElementById('progress');
+
+// Build dots
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'nav-dot';
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function goTo(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(total - 1, n));
+  slides[current].classList.add('active');
+  document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+  counterEl.textContent = `${current + 1} / ${total}`;
+  progressEl.style.width = `${((current + 1) / total) * 100}%`;
+
+  const pageNum = document.querySelector('.key-hint .page-number');
+  pageNum.style.animation = 'none';
+  void pageNum.offsetWidth; // Trigger reflow
+  pageNum.style.animation = 'flipPage .4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+  pageNum.textContent = String(current).padStart(2, '0');
+
+  document.getElementById('nav-logo').style.opacity = current === 0 ? '0' : '1';
+  document.querySelector('.nav').style.display = current === 0 ? 'none' : 'flex';
+  document.querySelector('.key-hint').style.display = current === 0 ? 'none' : 'block';
+}
+
+document.getElementById('prev-btn').onclick = () => {
+  // Special rule: Can go back from Opportunity page (current = 1) only if debug mode is OFF
+  // When debug mode is ON, no need to go back to home page
+  if (current === 1 && debugMode) return;
+  goTo(current - 1);
+};
+document.getElementById('next-btn').onclick = () => goTo(current + 1);
+
+// Engine button handler
+document.getElementById('engine-btn').onclick = (e) => {
+  e.stopPropagation();
+  const container = document.getElementById('engine-container');
+  container.classList.add('pulsing');
+  const engineSound = document.getElementById('engine-sound');
+  engineSound.currentTime = 0;
+  engineSound.play().catch(err => console.log('Audio play failed:', err));
+  setTimeout(() => goTo(1), 2000);
+};
+
+document.addEventListener('keydown', e => {
+  if (current === 0) return; // No arrow navigation on home page
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    // Special rule: Can't go back from Opportunity page if debug mode is ON
+    if (current === 1 && debugMode) return;
+    goTo(current - 1);
+  }
+});
+
+// Click anywhere to advance (except nav, and not during calibration, and not on home page)
+document.getElementById('deck').addEventListener('click', e => {
+  if (current !== 0 && !e.target.closest('.nav') && !document.getElementById('hl-cal-active')) goTo(current + 1);
+});
+
+goTo(0);
+
+// ── SPEAKER NOTES ──
+const speakerNotes = {
+  0: '', // Cover
+  1: '', // BLANK (The Opportunity)
+  2: '', // Problem
+  3: '', // Solution — One Engine. Multiple Racing Experiences
+  4: '', // Product & Gameplay
+  5: '', // Feel the Experience
+  6: '', // Content & Traction
+  7: '', // Market & Competition
+  8: '', // Monetization
+  9: '', // Roadmap & Platform Vision
+  10: '', // Team & Vision
+  11: '', // CTA
+};
+
+let notesVisible = false;
+let debugMode = localStorage.getItem('motox-debug-mode') === 'true';
+
+function updateNotes() {
+  const content = document.getElementById('speaker-notes-content');
+  content.textContent = speakerNotes[current] || '';
+}
+
+function toggleNotes() {
+  if (!debugMode) return; // Only works in debug mode
+  const panel = document.getElementById('speaker-notes');
+  notesVisible = !notesVisible;
+  panel.classList.toggle('show');
+}
+
+function toggleDebugMode() {
+  debugMode = !debugMode;
+  localStorage.setItem('motox-debug-mode', debugMode);
+  const indicator = document.getElementById('debug-indicator');
+  const logo = document.getElementById('nav-logo');
+  const notesPanel = document.getElementById('speaker-notes');
+
+  if (debugMode) {
+    indicator.style.display = 'block';
+    if (logo) logo.style.display = 'none';
+    if (current === 0) goTo(1); // Skip cover page
+    // Notes remain in their current state (default hidden)
+  } else {
+    indicator.style.display = 'none';
+    if (logo) logo.style.display = 'block';
+    notesVisible = false;
+    notesPanel.classList.remove('show'); // Disable notes when exiting debug mode
+  }
+}
+
+// Initialize debug mode on page load
+if (debugMode) {
+  setTimeout(() => {
+    const indicator = document.getElementById('debug-indicator');
+    const logo = document.getElementById('nav-logo');
+    indicator.style.display = 'block';
+    if (logo) logo.style.display = 'none';
+    // Auto-dismiss start gate
+    const gate = document.getElementById('start-gate');
+    gate.style.opacity = '0';
+    gate.style.pointerEvents = 'none';
+    // Skip to slide 1
+    setTimeout(() => goTo(1), 300);
+  }, 100);
+}
+
+// ── SEQUENTIAL VIDEO PLAYER WITH DYNAMIC CONTENT (Slide 7) ──
+const videoPlayer = document.getElementById('slide7-video-player');
+if (videoPlayer) {
+  const videos = [
+    'file:///Users/cenkgultekin/Desktop/MotoX%20Assets/Videos/slide7_v1.mp4',
+    'file:///Users/cenkgultekin/Desktop/MotoX%20Assets/Videos/slide7_v2.mp4'
+  ];
+
+  const contentData = [
+    {
+      title: 'Production Phase',
+      desc: 'Alpha stage with core mechanics live'
+    },
+    {
+      title: 'Platform Foundation',
+      desc: 'Scalable architecture, production-ready'
+    }
+  ];
+
+  let currentVideoIndex = 0;
+
+  function updateContent() {
+    const content = document.getElementById('slide7-content-details');
+    const titleEl = document.getElementById('slide7-content-title');
+    const descEl = document.getElementById('slide7-content-desc');
+
+    // Fade out
+    content.classList.remove('slide7-content-fade-in');
+    content.classList.add('slide7-content-fade-out');
+
+    setTimeout(() => {
+      // Update content
+      titleEl.textContent = contentData[currentVideoIndex].title;
+      descEl.textContent = contentData[currentVideoIndex].desc;
+
+      // Fade in
+      content.classList.remove('slide7-content-fade-out');
+      content.classList.add('slide7-content-fade-in');
+    }, 300);
+  }
+
+  // Subtitle data for each video
+  const subtitles = [
+    // Video 1 (slide7_v1.mp4)
+    [
+      { start: 0.5, end: 2.5, text: 'Precision in every shift.' },
+      { start: 2.5, end: 5.0, text: 'Feel the power.' },
+      { start: 5.0, end: Infinity, text: 'Control the moment.' }
+    ],
+    // Video 2 (slide7_v2.mp4)
+    [
+      { start: 0.5, end: 3.0, text: 'Race the streets.' },
+      { start: 3.0, end: 6.0, text: 'Own the city.' },
+      { start: 6.0, end: Infinity, text: 'Every city is a battleground.⚡' }
+    ]
+  ];
+
+  let lastSubtitleIndex = -1;
+
+  function showSubtitle(subtitleData) {
+    const subtitleEl = document.getElementById('slide7-subtitle');
+    subtitleEl.textContent = subtitleData.text;
+
+    requestAnimationFrame(() => {
+      subtitleEl.style.opacity = '1';
+      subtitleEl.style.transform = 'translateY(0)';
+    });
+  }
+
+  function hideSubtitle() {
+    const subtitleEl = document.getElementById('slide7-subtitle');
+    subtitleEl.style.opacity = '0';
+    subtitleEl.style.transform = 'translateY(8px)';
+  }
+
+  function updateSubtitle(currentTime) {
+    const subtitleEl = document.getElementById('slide7-subtitle');
+    const currentSubtitles = subtitles[currentVideoIndex];
+
+    // Find the appropriate subtitle for current time
+    let subtitleData = null;
+    for (let i = 0; i < currentSubtitles.length; i++) {
+      if (currentTime >= currentSubtitles[i].start && currentTime < currentSubtitles[i].end) {
+        subtitleData = currentSubtitles[i];
+        break;
+      }
+    }
+
+    const subtitleIndex = subtitleData ? currentSubtitles.indexOf(subtitleData) : -1;
+
+    if (subtitleIndex !== lastSubtitleIndex) {
+      lastSubtitleIndex = subtitleIndex;
+
+      if (subtitleData) {
+        // Fade out old, fade in new
+        subtitleEl.style.opacity = '0';
+        subtitleEl.style.transform = 'translateY(8px)';
+        setTimeout(() => showSubtitle(subtitleData), 100);
+      } else {
+        hideSubtitle();
+      }
+    }
+  }
+
+  function playNextVideo() {
+    currentVideoIndex = (currentVideoIndex + 1) % videos.length;
+    videoPlayer.src = videos[currentVideoIndex];
+    videoPlayer.load();
+    lastSubtitleIndex = -1;
+    updateContent();
+    videoPlayer.play().catch(err => console.log('Video play error:', err));
+  }
+
+  // Play first video on load
+  setTimeout(() => {
+    // Initialize text elements
+    const textEl = document.getElementById('slide7-animated-text');
+    const subtitleEl = document.getElementById('slide7-subtitle');
+    textEl.style.opacity = '0';
+    textEl.style.transform = 'translateY(20px)';
+    subtitleEl.style.opacity = '0';
+    subtitleEl.style.transform = 'translateY(8px)';
+
+    videoPlayer.src = videos[0];
+    videoPlayer.load();
+    videoPlayer.autoplay = true;
+    updateContent();
+    videoPlayer.play().catch(err => console.log('Video play error:', err));
+  }, 500);
+
+  // Update subtitles on timeupdate
+  videoPlayer.addEventListener('timeupdate', () => {
+    updateSubtitle(videoPlayer.currentTime);
+  });
+
+  // Switch to next video when current one ends
+  videoPlayer.addEventListener('ended', playNextVideo);
+}
+
+// Add N key handler (speaker notes - only works in debug mode)
+document.addEventListener('keydown', e => {
+  if (e.key === 'n' || e.key === 'N') {
+    e.preventDefault();
+    toggleNotes();
+  }
+  // Add D key for debug mode toggle
+  if (e.key === 'd' || e.key === 'D') {
+    e.preventDefault();
+    toggleDebugMode();
+  }
+});
+
+// Update notes when slide changes
+const originalGoTo = goTo;
+goTo = function(n) {
+  originalGoTo(n);
+  updateNotes();
+};
+
+// ── ENGINE SOUND ──
+let sharedAudioContext = null;
+
+function makeAC() {
+  try {
+    if (!sharedAudioContext) {
+      sharedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+      // Try to resume if suspended
+      if (sharedAudioContext.state === 'suspended') {
+        sharedAudioContext.resume().catch(e => console.log('Resume failed:', e));
+      }
+    }
+    return sharedAudioContext;
+  } catch(e) {
+    console.log('Audio context error:', e);
+    return null;
+  }
+}
+
+// Initialize and resume audio context on first user interaction
+document.addEventListener('click', () => {
+  const ac = makeAC();
+  if (ac && ac.state === 'suspended') {
+    ac.resume().then(() => console.log('✅ AudioContext resumed')).catch(e => console.log('Resume error:', e));
+  }
+}, { once: true });
+
+function playIgnition() {
+  const ac = makeAC(); if (!ac) return;
+  // Bass engine rumble
+  const osc = ac.createOscillator(), g = ac.createGain();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(38, ac.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(90, ac.currentTime + 1.4);
+  g.gain.setValueAtTime(0.0001, ac.currentTime);
+  g.gain.linearRampToValueAtTime(0.20, ac.currentTime + 0.12);
+  g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 2.8);
+  osc.connect(g); g.connect(ac.destination);
+  osc.start(); osc.stop(ac.currentTime + 2.8);
+  // Sharp crack
+  const buf = ac.createBuffer(1, ac.sampleRate * 0.14, ac.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.exp(-i * 55 / ac.sampleRate);
+  const src = ac.createBufferSource(), g2 = ac.createGain();
+  src.buffer = buf; g2.gain.value = 0.55;
+  src.connect(g2); g2.connect(ac.destination); src.start();
+}
+
+function playTick(loud) {
+  if (debugMode) return; // No sound in debug mode
+  const ac = makeAC();
+  if (!ac) return;
+
+  try {
+    // Smooth, gentle, warm typewriter sound
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+
+    osc.frequency.value = 550; // Even lower, mellower frequency
+    osc.type = 'sine';
+
+    // Very smooth and gentle envelope
+    gain.gain.setValueAtTime(0, ac.currentTime);
+    gain.gain.linearRampToValueAtTime(loud ? 0.15 : 0.08, ac.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.12);
+
+    osc.connect(gain);
+    gain.connect(ac.destination);
+
+    osc.start(ac.currentTime);
+    osc.stop(ac.currentTime + 0.12);
+  } catch(e) {
+    // Silent fail
+  }
+}
+
+// ── CINEMATIC COVER INTRO ──
+(function() {
+
+  function playWhoosh() {
+    const ac = makeAC(); if (!ac) return;
+    const buf = ac.createBuffer(1, ac.sampleRate * 0.7, ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.sin(i / d.length * Math.PI);
+    const src = ac.createBufferSource();
+    const hp = ac.createBiquadFilter(); hp.type = 'bandpass';
+    hp.frequency.setValueAtTime(300, ac.currentTime);
+    hp.Q.value = 0.4;
+    const g = ac.createGain(); g.gain.value = 0.16;
+    src.buffer = buf; src.connect(hp); hp.connect(g); g.connect(ac.destination); src.start();
+  }
+
+
+  function makeCursor(color) {
+    const c = document.createElement('span');
+    c.style.cssText = `display:inline-block;width:2px;height:0.85em;background:${color||'var(--accent)'};margin-left:3px;vertical-align:middle;animation:cursorBlink 0.65s step-end infinite;`;
+    return c;
+  }
+
+  function typeSegments(el, segments, delay, onDone) {
+    el.innerHTML = ''; el.style.opacity = '1';
+    const cursor = makeCursor('var(--accent)');
+    el.appendChild(cursor);
+    let si = 0, ci = 0, curSpan = null;
+    function tick() {
+      if (si >= segments.length) { cursor.remove(); if (onDone) onDone(); return; }
+      const seg = segments[si];
+      if (seg.br) {
+        cursor.remove(); el.appendChild(document.createElement('br'));
+        si++; ci = 0; curSpan = null; el.appendChild(cursor);
+        setTimeout(tick, delay * 5); return;
+      }
+      if (ci === 0) {
+        curSpan = document.createElement('span');
+        if (seg.color) curSpan.style.color = seg.color;
+        cursor.remove(); el.appendChild(curSpan); el.appendChild(cursor);
+      }
+      curSpan.textContent += seg.text[ci++];
+      playTick(true);
+      if (ci >= seg.text.length) { si++; ci = 0; curSpan = null; }
+      setTimeout(tick, delay);
+    }
+    tick();
+  }
+
+  function typeText(el, text, delay, onDone) {
+    el.textContent = ''; el.style.opacity = '1';
+    const cursor = makeCursor('#8292a8');
+    el.appendChild(cursor);
+    let i = 0;
+    function tick() {
+      if (i >= text.length) { cursor.remove(); if (onDone) onDone(); return; }
+      cursor.insertAdjacentText('beforebegin', text[i++]);
+      if (i % 3 === 0) playTick(false); // Play sound every 3 characters
+      setTimeout(tick, delay);
+    }
+    tick();
+  }
+
+  function reveal(el, dur, props) {
+    el.style.transition = `opacity ${dur}s ease, transform ${dur}s ease`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.opacity = '1';
+      if (props) Object.assign(el.style, props);
+    }));
+  }
+
+  const img      = document.querySelector('.cover-left img');
+  const divider  = document.querySelector('.cover-divider');
+  const eyebrow  = document.querySelector('.cv-eyebrow');
+  const titleEl  = document.querySelector('.cv-title');
+  const subEl    = document.querySelector('.cv-sub');
+  const dividerH = document.querySelector('.cv-divider-h');
+  const btn      = document.querySelector('.engine-btn-container');
+  const badge    = document.querySelector('.cv-badge');
+
+  // Start sequence when user clicks the gate
+  const gate = document.getElementById('start-gate');
+  gate.addEventListener('click', () => {
+    gate.style.opacity = '0';
+    gate.style.pointerEvents = 'none';
+    setTimeout(startSequence, 300);
+  });
+
+  function startSequence() {
+    // Start with everything hidden
+    img.style.opacity = '0';
+    divider.style.height = '0';
+    divider.style.top = '50%';
+    titleEl.style.opacity = '0';
+    subEl.style.opacity = '0';
+
+    // Step 1: Title typewriter (with sound)
+    titleEl.style.opacity = '1';
+    typeSegments(titleEl, [
+      {text:'We Built'}, {br:true},
+      {text:'the Engine'}, {br:true},
+      {text:'Racing', color:'var(--accent)'}, {br:true},
+      {text:'Deserved.'},
+    ], 55, () => {
+
+      // Step 2: Description typewriter (with sound)
+      setTimeout(() => {
+        subEl.style.opacity = '1';
+        typeText(subEl,
+          'Feel the rush. Master the art of speed. Dominate the streets.',
+          30, () => {
+
+            // Step 3: Headlights appear with divider animation
+            setTimeout(() => {
+              img.style.opacity = '1';
+              divider.style.transition = 'height 0.9s ease, top 0.9s ease';
+              divider.style.height = '100%';
+              divider.style.top = '0';
+
+              // Step 4: After 1.5s, motorcycle image appears
+              setTimeout(() => {
+                img.style.transform = 'scale(1)';
+
+                // Horizontal divider line appears
+                setTimeout(() => {
+                  dividerH.style.transition = 'width 0.65s ease';
+                  dividerH.style.width = '80px';
+                }, 200);
+
+                // Step 5: Engine button appears
+                setTimeout(() => {
+                  const btnContainer = document.getElementById('engine-container');
+                  btnContainer.classList.add('show');
+                  reveal(badge, 0.5);
+                }, 500);
+              }, 1500);
+            }, 300);
+          });
+      }, 300);
+    });
+  } // end startSequence
+})();
+
+// ── HEADLIGHT CALIBRATION TOOL ──
+// Press C to enter calibration mode:
+//   Click points around LEFT headlight → press Enter → click RIGHT headlight → press Enter
+//   The console will print the final HL_PATHS_PX array to paste back.
+(function() {
+  let calMode = false, calStep = 0, calPts = [[], []];
+  const calCanvas = document.createElement('canvas');
+  calCanvas.style.cssText = 'position:absolute;inset:0;z-index:20;cursor:crosshair;display:none;';
+  document.querySelector('.cover-left').appendChild(calCanvas);
+  const calCtx = calCanvas.getContext('2d');
+  let CW, CH;
+
+  function calResize() {
+    CW = calCanvas.width  = calCanvas.offsetWidth  || calCanvas.parentElement.offsetWidth;
+    CH = calCanvas.height = calCanvas.offsetHeight || calCanvas.parentElement.offsetHeight;
+  }
+
+  function imgCoords(xc, yc) {
+    // Reverse of imgToCanvas: canvas px → image px (1024×1024)
+    const scale = Math.max(CW / 1024, CH / 1024);
+    const ox = (CW - 1024 * scale) / 2, oy = (CH - 1024 * scale) / 2;
+    return { xi: Math.round((xc - ox) / scale), yi: Math.round((yc - oy) / scale) };
+  }
+
+  function drawCal() {
+    calCtx.clearRect(0, 0, CW, CH);
+    // Dark overlay
+    calCtx.fillStyle = 'rgba(0,0,0,0.45)';
+    calCtx.fillRect(0, 0, CW, CH);
+
+    const colors = ['#ff4400', '#00aaff'];
+    const labels = ['LEFT headlight', 'RIGHT headlight'];
+    calPts.forEach((pts, si) => {
+      if (pts.length === 0) return;
+      calCtx.beginPath();
+      calCtx.moveTo(pts[0].xc, pts[0].yc);
+      pts.forEach(p => calCtx.lineTo(p.xc, p.yc));
+      calCtx.strokeStyle = colors[si]; calCtx.lineWidth = 2; calCtx.stroke();
+      pts.forEach((p, i) => {
+        calCtx.beginPath(); calCtx.arc(p.xc, p.yc, 5, 0, Math.PI*2);
+        calCtx.fillStyle = colors[si]; calCtx.fill();
+        calCtx.fillStyle = '#fff'; calCtx.font = '11px monospace';
+        calCtx.fillText(i+1, p.xc+7, p.yc+4);
+      });
+    });
+
+    // Instructions
+    const step = calStep < 2 ? calStep : 1;
+    calCtx.fillStyle = '#fff'; calCtx.font = 'bold 15px sans-serif';
+    calCtx.fillText(`CALIBRATION: click corners of ${labels[Math.min(calStep,1)]}`, 14, 26);
+    calCtx.font = '13px sans-serif'; calCtx.fillStyle = '#aaa';
+    calCtx.fillText('Press Enter when done with this light  |  Press C to cancel', 14, 46);
+  }
+
+  window.addEventListener('keydown', e => {
+    if (e.key === 'c' || e.key === 'C') {
+      calMode = !calMode; calStep = 0; calPts = [[], []];
+      calResize();
+      calCanvas.style.display = calMode ? 'block' : 'none';
+      // sentinel element so deck click handler knows calibration is active
+      if (calMode) {
+        const s = document.createElement('div');
+        s.id = 'hl-cal-active'; s.style.display = 'none';
+        document.body.appendChild(s);
+        drawCal();
+      } else {
+        const s = document.getElementById('hl-cal-active');
+        if (s) s.remove();
+      }
+    }
+    if (calMode && e.key === 'Enter') {
+      if (calStep < 1) { calStep++; drawCal(); }
+      else {
+        // Done — output coordinates
+        const out = calPts.map(pts =>
+          pts.map(p => { const {xi,yi} = imgCoords(p.xc,p.yc); return [xi,yi]; })
+        );
+        console.log('=== HL_PATHS_PX ===');
+        console.log(JSON.stringify(out, null, 2));
+        alert('Coordinates logged to console (F12 → Console tab). Paste them back to Claude!');
+        calMode = false; calCanvas.style.display = 'none';
+        const s = document.getElementById('hl-cal-active'); if (s) s.remove();
+      }
+    }
+  });
+
+  calCanvas.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!calMode || calStep > 1) return;
+    const r = calCanvas.getBoundingClientRect();
+    const xc = e.clientX - r.left, yc = e.clientY - r.top;
+    calPts[calStep].push({ xc, yc });
+    drawCal();
+  });
+
+  window.addEventListener('resize', () => { if (calMode) calResize(); });
+})();
+
+// ── HEADLIGHT FX ──
+(function() {
+  const canvas = document.getElementById('hl-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H;
+
+  function resize() {
+    const el = canvas.parentElement;
+    W = canvas.width  = el.offsetWidth;
+    H = canvas.height = el.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Headlight paths — user-calibrated pixel coords on 1024×1024 image
+  const HL_PATHS_PX = [
+    [[183,380],[412,486],[369,519],[203,449],[183,378]],
+    [[588,486],[832,391],[818,455],[648,522],[591,486]],
+  ];
+
+  function imgToCanvas(xi, yi) {
+    const scale = Math.max(W / 1024, H / 1024);
+    const ox = (W - 1024 * scale) / 2, oy = (H - 1024 * scale) / 2;
+    return { x: xi * scale + ox, y: yi * scale + oy };
+  }
+  function pxToPts(path) { return path.map(([xi,yi]) => imgToCanvas(xi, yi)); }
+
+  // Smooth bezier path through polygon points (midpoint quadratic)
+  function traceSmooth(path, scale = 1) {
+    const pts = pxToPts(path);
+    const cx = pts.reduce((s,p)=>s+p.x,0)/pts.length;
+    const cy = pts.reduce((s,p)=>s+p.y,0)/pts.length;
+    const sc = pts.map(p => ({ x:(p.x-cx)*scale+cx, y:(p.y-cy)*scale+cy }));
+    const n = sc.length;
+    ctx.beginPath();
+    const start = { x:(sc[n-1].x+sc[0].x)/2, y:(sc[n-1].y+sc[0].y)/2 };
+    ctx.moveTo(start.x, start.y);
+    for (let i = 0; i < n; i++) {
+      const cur = sc[i], nxt = sc[(i+1)%n];
+      const mx = (cur.x+nxt.x)/2, my = (cur.y+nxt.y)/2;
+      ctx.quadraticCurveTo(cur.x, cur.y, mx, my);
+    }
+    ctx.closePath();
+  }
+
+  function pathCenter(path) {
+    const pts = pxToPts(path);
+    return { x: pts.reduce((s,p)=>s+p.x,0)/pts.length, y: pts.reduce((s,p)=>s+p.y,0)/pts.length };
+  }
+
+  function pathPoint(path, t) {
+    const pts = pxToPts(path);
+    let perim = 0;
+    const segs = pts.map((p,i) => {
+      const n = pts[(i+1)%pts.length];
+      const len = Math.hypot(n.x-p.x, n.y-p.y);
+      perim += len; return len;
+    });
+    let dist = ((t%1+1)%1) * perim;
+    for (let i = 0; i < segs.length; i++) {
+      if (dist <= segs[i]) {
+        const f = dist/segs[i], p = pts[i], n = pts[(i+1)%pts.length];
+        return { x: p.x+(n.x-p.x)*f, y: p.y+(n.y-p.y)*f };
+      }
+      dist -= segs[i];
+    }
+    return pts[0];
+  }
+
+  // Particles — 40% slower speeds
+  const particles = [];
+  HL_PATHS_PX.forEach((path, pi) => {
+    for (let i = 0; i < 50; i++) {
+      const spd = (0.00072 + Math.random()*0.00132) * (Math.random()>.5?1:-1);
+      particles.push({
+        pi, t: Math.random(), speed: spd,
+        r: 1.0 + Math.random()*2.8,
+        alpha: 0.5 + Math.random()*0.5,
+        vAlpha: (Math.random()-.5)*0.016,
+        trail: [], trailLen: 8 + Math.floor(Math.random()*16),
+        color: Math.random()>.35
+          ? `255,${Math.floor(Math.random()*40)},5`
+          : `255,${Math.floor(70+Math.random()*90)},15`,
+      });
+    }
+  });
+
+  // Expanding rings
+  const rings = [];
+  HL_PATHS_PX.forEach((_, pi) => {
+    for (let i = 0; i < 3; i++) rings.push({ pi, scale: i/3, speed: 0.0027 });
+  });
+
+  // Breathing glow — smooth living pulse, never goes dark
+  let surgeTimer = 2 + Math.random()*3, surgeVal = 0, surgeActive = false;
+  let lastTime = performance.now();
+
+  function draw(now) {
+    const dt = Math.min((now-lastTime)/1000, 0.05);
+    lastTime = now;
+    const t = now/1000;
+
+    // Breathing alpha: slow sine, stays between 0.55–0.95
+    let glow = 0.55 + 0.35 * (0.5 + 0.5 * Math.sin(t * 0.55));
+
+    // Occasional power surge — brief intensity spike
+    surgeTimer -= dt;
+    if (surgeTimer <= 0 && !surgeActive) { surgeActive = true; surgeVal = 0; surgeTimer = 4 + Math.random()*5; }
+    if (surgeActive) {
+      surgeVal = Math.min(surgeVal + dt * 5, 1);
+      glow = Math.min(1, glow + Math.sin(surgeVal * Math.PI) * 0.4);
+      if (surgeVal >= 1) surgeActive = false;
+    }
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.globalAlpha = glow;
+
+    HL_PATHS_PX.forEach((path, pi) => {
+      const c = pathCenter(path);
+
+      // Filled inner glow
+      traceSmooth(path, 1);
+      const fillGrd = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, 95);
+      fillGrd.addColorStop(0,   `rgba(255,55,10,${0.55+Math.sin(t*1.4+pi)*0.10})`);
+      fillGrd.addColorStop(0.5, `rgba(200,10,0,0.15)`);
+      fillGrd.addColorStop(1,   'rgba(150,0,0,0)');
+      ctx.fillStyle = fillGrd; ctx.fill();
+
+      // Glowing smooth outline
+      ctx.save();
+      ctx.shadowColor = 'rgba(255,20,0,1)';
+      ctx.shadowBlur  = 22;
+      traceSmooth(path, 1);
+      ctx.strokeStyle = `rgba(255,60,10,${0.80+Math.sin(t*1.8+pi)*0.15})`;
+      ctx.lineWidth = 3; ctx.stroke();
+      traceSmooth(path, 0.68);
+      ctx.strokeStyle = `rgba(255,100,30,${0.40+Math.sin(t*2.1+pi)*0.10})`;
+      ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.restore();
+
+      // Hot core dot at center
+      const lensGrd = ctx.createRadialGradient(c.x,c.y,0,c.x,c.y,18);
+      lensGrd.addColorStop(0,  `rgba(255,235,200,${0.92+Math.sin(t*2.2+pi)*0.08})`);
+      lensGrd.addColorStop(0.5,'rgba(255,60,15,0.6)');
+      lensGrd.addColorStop(1,  'rgba(200,0,0,0)');
+      ctx.beginPath(); ctx.arc(c.x, c.y, 18, 0, Math.PI*2);
+      ctx.fillStyle = lensGrd; ctx.fill();
+    });
+
+    // Expanding smooth rings
+    rings.forEach(ring => {
+      ring.scale = (ring.scale + ring.speed) % 1;
+      const s = 1 + ring.scale * 0.55;
+      traceSmooth(HL_PATHS_PX[ring.pi], s);
+      ctx.strokeStyle = `rgba(255,30,5,${(1-ring.scale)*0.45})`;
+      ctx.lineWidth   = 2*(1-ring.scale*0.85);
+      ctx.stroke();
+    });
+
+    // Edge particles with trails
+    particles.forEach(em => {
+      em.t = (em.t + em.speed + 1) % 1;
+      em.alpha += em.vAlpha;
+      if (em.alpha>1)   { em.alpha=1;   em.vAlpha*=-1; }
+      if (em.alpha<0.2) { em.alpha=0.2; em.vAlpha*=-1; }
+
+      const pos = pathPoint(HL_PATHS_PX[em.pi], em.t);
+      em.trail.push({x:pos.x, y:pos.y});
+      if (em.trail.length > em.trailLen) em.trail.shift();
+
+      for (let i=1; i<em.trail.length; i++) {
+        const a = (i/em.trail.length)*em.alpha*0.45;
+        ctx.beginPath();
+        ctx.moveTo(em.trail[i-1].x, em.trail[i-1].y);
+        ctx.lineTo(em.trail[i].x,   em.trail[i].y);
+        ctx.strokeStyle = `rgba(${em.color},${a})`;
+        ctx.lineWidth   = em.r*0.5*(i/em.trail.length);
+        ctx.stroke();
+      }
+      ctx.save();
+      ctx.shadowColor = 'rgba(255,15,0,0.9)';
+      ctx.shadowBlur  = em.r*5;
+      ctx.beginPath(); ctx.arc(pos.x, pos.y, em.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${em.color},${em.alpha})`;
+      ctx.fill();
+      ctx.restore();
+    });
+
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+// ── COVER PARTICLES ──
+(function() {
+  const canvas = document.getElementById('cover-particles');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: rand(0, 1), y: rand(0, 1),
+      vx: rand(-.0003, .0003), vy: rand(-.0003, .0003),
+      r: rand(1, 2.5),
+      alpha: rand(.1, .5),
+      color: Math.random() > .7 ? '224,26,26' : '180,190,210'
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = 1; if (p.x > 1) p.x = 0;
+      if (p.y < 0) p.y = 1; if (p.y > 1) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x * W, p.y * H, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
