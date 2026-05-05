@@ -2199,45 +2199,73 @@ function playTick(loud) {
 })();
 </script>
 
-<!-- UNITY WEBGL LOADER - Using original build config -->
-<script src="build/Build/build.loader.js"></script>
+<!-- UNITY WEBGL LOADER - Initialize on slide 5 -->
 <script>
-  var canvas = document.querySelector("#unity-canvas");
-  var loadingBar = document.querySelector("#unity-loading-bar");
-  var warningBanner = document.querySelector("#unity-warning");
+  let unityInitialized = false;
 
-  var config = {
-    dataUrl: "build/Build/build.data",
-    frameworkUrl: "build/Build/build.framework.js",
-    codeUrl: "build/Build/build.wasm",
-    streamingAssetsUrl: "build/StreamingAssets",
-    companyName: "motoxgames",
-    productName: "citylegends",
-    productVersion: "0.0.42",
-    showBanner: function(msg, type) {
-      if (warningBanner) {
-        warningBanner.innerHTML = msg;
-        warningBanner.style.display = 'block';
+  function initializeWebGL() {
+    if (unityInitialized) return;
+    unityInitialized = true;
+
+    const canvas = document.querySelector("#unity-canvas");
+    const loadingBar = document.querySelector("#unity-loading-bar");
+    const warningBanner = document.querySelector("#unity-warning");
+
+    if (!canvas) {
+      console.error('Canvas element not found');
+      return;
+    }
+
+    const config = {
+      dataUrl: "build/Build/build.data.br",
+      frameworkUrl: "build/Build/build.framework.js.br",
+      codeUrl: "build/Build/build.wasm.br",
+      streamingAssetsUrl: "build/StreamingAssets",
+      companyName: "motoxgames",
+      productName: "citylegends",
+      productVersion: "0.0.42",
+      showBanner: function(msg, type) {
+        if (warningBanner) {
+          warningBanner.innerHTML = msg;
+          warningBanner.style.display = 'block';
+        }
       }
+    };
+
+    if (loadingBar) loadingBar.style.display = "block";
+
+    const script = document.createElement("script");
+    script.src = "build/Build/build.loader.js";
+    script.onload = () => {
+      if (typeof createUnityInstance !== 'undefined') {
+        createUnityInstance(canvas, config, (progress) => {
+          if (loadingBar) {
+            loadingBar.style.display = "flex";
+            const percent = Math.round(100 * progress);
+            loadingBar.querySelector('div:last-child').textContent = percent + '%';
+          }
+        }).then((unityInstance) => {
+          if (loadingBar) loadingBar.style.display = "none";
+        }).catch((message) => {
+          console.error('WebGL Error:', message);
+          if (warningBanner) {
+            warningBanner.innerHTML = message;
+            warningBanner.style.display = 'flex';
+          }
+        });
+      }
+    };
+    script.onerror = () => console.error('Failed to load build.loader.js');
+    document.body.appendChild(script);
+  }
+
+  const originalGoTo = window.goTo;
+  window.goTo = function(n) {
+    originalGoTo(n);
+    if (n === 5) {
+      setTimeout(initializeWebGL, 100);
     }
   };
-
-  loadingBar.style.display = "block";
-
-  var script = document.createElement("script");
-  script.src = "build/Build/build.loader.js";
-  script.onload = () => {
-    createUnityInstance(canvas, config, (progress) => {
-      if (loadingBar) {
-        loadingBar.style.width = (100 * progress) + "%";
-      }
-    }).then((unityInstance) => {
-      loadingBar.style.display = "none";
-    }).catch((message) => {
-      alert(message);
-    });
-  };
-  document.body.appendChild(script);
 </script>
 </body>
 </html>
