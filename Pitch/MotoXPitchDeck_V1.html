@@ -956,12 +956,15 @@
     </div>
 
     <!-- WEBGL CONTAINER -->
-    <div style="width:100%;max-width:1000px;flex:1;display:flex;flex-direction:column;justify-content:center;">
-      <div style="position:relative;border-radius:16px;overflow:hidden;height:600px;background:#000;border:1px solid rgba(255,68,0,0.4);box-shadow:0 30px 80px rgba(255,68,0,0.15);">
+    <div style="width:100%;max-width:1000px;flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+      <div style="position:relative;border-radius:16px;overflow:hidden;width:100%;aspect-ratio:16/9;background:#000;border:1px solid rgba(255,68,0,0.4);box-shadow:0 30px 80px rgba(255,68,0,0.15);">
         <div id="unity-container" style="position:absolute;inset:0;width:100%;height:100%;">
-          <canvas id="unity-canvas" width="960" height="540" style="width:100%;height:100%;display:block;"></canvas>
+          <canvas id="unity-canvas" width="960" height="540" tabindex="-1" style="width:100%;height:100%;display:block;"></canvas>
           <div id="unity-loading-bar" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);color:#fff;font-size:14px;">
-            Loading game...
+            <div style="text-align:center;">
+              <div style="font-size:24px;margin-bottom:16px;">🎮</div>
+              <div>Loading game...</div>
+            </div>
           </div>
           <div id="unity-warning" style="display:none;"></div>
         </div>
@@ -2193,6 +2196,46 @@ function playTick(loud) {
   }
   draw();
 })();
+</script>
+
+<!-- UNITY WEBGL LOADER -->
+<script src="build/TemplateData/UnityProgress.js"></script>
+<script src="build/Build/build.loader.js"></script>
+<script>
+  var container = document.querySelector("#unity-container");
+  var canvas = document.querySelector("#unity-canvas");
+  var loadingBar = document.querySelector("#unity-loading-bar");
+  var progressBarFull = document.querySelector("#unity-progress-bar-full");
+  var warningBanner = document.querySelector("#unity-warning");
+
+  var buildUrl = "build/Build";
+  var loaderUrl = buildUrl + "/build.loader.js";
+  var config = {
+    dataUrl: buildUrl + "/build.data.br",
+    frameworkUrl: buildUrl + "/build.framework.js.br",
+    codeUrl: buildUrl + "/build.wasm.br",
+    streamingAssetsUrl: "build/StreamingAssets",
+    companyName: "motoxgames",
+    productName: "citylegends",
+    productVersion: "0.0.42",
+  };
+
+  if (/iPhone|iPad|iPod|Android/g.test(navigator.userAgent)) {
+    warningBanner.querySelector("p").textContent = "WebGL builds are not supported on mobile devices.";
+    warningBanner.style.display = "block";
+    throw new Error("Unsupported platform");
+  }
+
+  if (typeof UnityProgress !== "undefined") {
+    config.onProgress = UnityProgress.Handler;
+  }
+
+  createUnityInstance(canvas, config, (progress) => {
+    if (loadingBar) loadingBar.style.display = progress === 1 ? "none" : "flex";
+    if (progressBarFull) progressBarFull.style.width = Math.round(progress * 100) + "%";
+  }).catch((message) => {
+    alert(message);
+  });
 </script>
 </body>
 </html>
